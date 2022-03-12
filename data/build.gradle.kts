@@ -1,16 +1,22 @@
 import com.infinitepower.game2048.buildsrc.ProjectConfig
+import com.infinitepower.game2048.buildsrc.Compose
 import com.infinitepower.game2048.buildsrc.Testing
 import com.infinitepower.game2048.buildsrc.AndroidX
+import com.infinitepower.game2048.buildsrc.Hilt
+import com.infinitepower.game2048.buildsrc.Modules
+import com.infinitepower.game2048.buildsrc.DataStore
 import com.infinitepower.game2048.buildsrc.Kotlinx
 
 plugins {
     id("com.android.library")
     kotlin("android")
+    kotlin("kapt")
     kotlin("plugin.serialization") version "1.6.10"
+    id("dagger.hilt.android.plugin")
 }
 
 android {
-    namespace = "com.infinitepower.game2048.model"
+    namespace = "com.infinitepower.game2048.data"
     compileSdk = ProjectConfig.compileSdk
 
     defaultConfig {
@@ -35,16 +41,45 @@ android {
         jvmTarget = "11"
         freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Compose.composeVersion
+    }
+    packagingOptions {
+        exclude("META-INF/AL2.0")
+        exclude("META-INF/LGPL2.1")
+    }
 }
 
 dependencies {
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.lifecycleRuntimeKtx)
 
-    implementation(Kotlinx.serialization)
-
     testImplementation(Testing.junit)
     androidTestImplementation(Testing.junitAndroidExt)
     androidTestImplementation(Testing.espressoCore)
     androidTestImplementation(Testing.composeUiTestJunit4)
+
+    debugImplementation(Compose.uiTooling)
+    debugImplementation(Compose.uiTestManifest)
+    implementation(Compose.composeUi)
+    implementation(Compose.composeUiToolingPreview)
+    implementation(Compose.constraintLayout)
+
+    implementation(DataStore.dataStorePreferences)
+
+    implementation(Kotlinx.serialization)
+
+    implementation(Hilt.hiltAndroid)
+    kapt(Hilt.hiltCompiler)
+    kapt(Hilt.androidXHiltCompiler)
+    implementation(Hilt.navigationCompose)
+    androidTestImplementation(Hilt.hiltAndroidTesting)
+    kaptAndroidTest(Hilt.hiltAndroidCompiler)
+
+    implementation(project(Modules.core))
+    implementation(project(Modules.domain))
+    implementation(project(Modules.model))
 }

@@ -1,11 +1,13 @@
 package com.infinitepower.game2048.model
 
 import androidx.annotation.Keep
+import kotlinx.serialization.Serializable
 
 /**
  * Container class that wraps a number and a unique [id] for use in the grid.
  */
 @Keep
+@Serializable
 data class Tile constructor(
     val num: Int,
     val id: Int

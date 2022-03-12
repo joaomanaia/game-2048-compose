@@ -3,11 +3,14 @@ import com.infinitepower.game2048.buildsrc.AndroidX
 import com.infinitepower.game2048.buildsrc.Testing
 import com.infinitepower.game2048.buildsrc.Material
 import com.infinitepower.game2048.buildsrc.Compose
+import com.infinitepower.game2048.buildsrc.DataStore
+import com.infinitepower.game2048.buildsrc.Hilt
 
 plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -63,7 +66,16 @@ dependencies {
     implementation(Compose.composeUi)
     implementation(Compose.composeUiToolingPreview)
 
+    implementation(Hilt.hiltAndroid)
+    kapt(Hilt.hiltCompiler)
+    kapt(Hilt.androidXHiltCompiler)
+    implementation(Hilt.navigationCompose)
+    androidTestImplementation(Hilt.hiltAndroidTesting)
+    kaptAndroidTest(Hilt.hiltAndroidCompiler)
+
     implementation(Material.material)
 
     implementation(Compose.composeMaterial3)
+
+    implementation(DataStore.dataStorePreferences)
 }

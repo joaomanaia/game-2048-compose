@@ -1,16 +1,19 @@
 import com.infinitepower.game2048.buildsrc.ProjectConfig
+import com.infinitepower.game2048.buildsrc.Compose
 import com.infinitepower.game2048.buildsrc.Testing
 import com.infinitepower.game2048.buildsrc.AndroidX
+import com.infinitepower.game2048.buildsrc.Hilt
+import com.infinitepower.game2048.buildsrc.Modules
+import com.infinitepower.game2048.buildsrc.DataStore
 import com.infinitepower.game2048.buildsrc.Kotlinx
 
 plugins {
     id("com.android.library")
     kotlin("android")
-    kotlin("plugin.serialization") version "1.6.10"
 }
 
 android {
-    namespace = "com.infinitepower.game2048.model"
+    namespace = "com.infinitepower.game2048.domain"
     compileSdk = ProjectConfig.compileSdk
 
     defaultConfig {
@@ -41,10 +44,11 @@ dependencies {
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.lifecycleRuntimeKtx)
 
-    implementation(Kotlinx.serialization)
-
     testImplementation(Testing.junit)
     androidTestImplementation(Testing.junitAndroidExt)
     androidTestImplementation(Testing.espressoCore)
     androidTestImplementation(Testing.composeUiTestJunit4)
+
+    implementation(project(Modules.core))
+    implementation(project(Modules.model))
 }

@@ -5,11 +5,14 @@ import com.infinitepower.game2048.buildsrc.AndroidX
 import com.infinitepower.game2048.buildsrc.Hilt
 import com.infinitepower.game2048.buildsrc.Modules
 import com.infinitepower.game2048.buildsrc.Material
+import com.infinitepower.game2048.buildsrc.DataStore
+import com.infinitepower.game2048.buildsrc.Kotlinx
 
 plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    kotlin("plugin.serialization") version "1.6.10"
     id("dagger.hilt.android.plugin")
 }
 
@@ -69,6 +72,10 @@ dependencies {
     implementation(Compose.composeMaterial3)
     implementation(Material.material)
 
+    implementation(DataStore.dataStorePreferences)
+
+    implementation(Kotlinx.serialization)
+
     implementation(Hilt.hiltAndroid)
     kapt(Hilt.hiltCompiler)
     kapt(Hilt.androidXHiltCompiler)
@@ -78,4 +85,6 @@ dependencies {
 
     implementation(project(Modules.core))
     implementation(project(Modules.model))
+    implementation(project(Modules.data))
+    implementation(project(Modules.domain))
 }

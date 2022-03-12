@@ -11,11 +11,19 @@ import androidx.annotation.IntRange
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.google.android.material.math.MathUtils.floorMod
+import com.infinitepower.game2048.core.common.preferences.GameDataPreferencesCommon
+import com.infinitepower.game2048.core.datastore.manager.DataStoreManager
+import com.infinitepower.game2048.core.di.GameDataPreferences
+import com.infinitepower.game2048.domain.SaveGameRepository
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import kotlin.math.max
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val saveGameRepository: SaveGameRepository
+) : ViewModel() {
     private val _homeScreenUiState = MutableStateFlow(HomeScreenUiState())
     val homeScreenUiState = _homeScreenUiState.asStateFlow()
 
@@ -30,7 +38,22 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            startNewGame()
+            if (saveGameRepository.checkSaveGameExists()) {
+                // Restore a previously saved game.
+                val savedGrid = saveGameRepository.getSavedGrid()
+                grid.emit(savedGrid)
+
+                _homeScreenUiState.emit(
+                    homeScreenUiState.first().copy(
+                        gridTileMovements = saveGameRepository.getSavedGridTileMovements(),
+                        currentScore = saveGameRepository.getSavedCurrentScore(),
+                        bestScore = saveGameRepository.getSavedBestScore(),
+                        isGameOver = checkIsGameOver(savedGrid)
+                    )
+                )
+            } else {
+                startNewGame()
+            }
         }
     }
 
@@ -46,14 +69,17 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         }
         grid.emit(newGrid)
 
+        val uiState = homeScreenUiState.first()
         _homeScreenUiState.emit(
-            homeScreenUiState.first().copy(
+            uiState.copy(
                 gridTileMovements = newGridTileMovements,
                 currentScore = 0,
                 isGameOver = false,
                 moveCount = 0
             )
         )
+
+        saveGameRepository.saveGame(newGrid, 0, uiState.bestScore)
     }
 
     private suspend fun move(direction: Direction) {
@@ -78,16 +104,23 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
         val uiState = homeScreenUiState.first()
         val currentNewScore = uiState.currentScore + scoreIncrement
+        val newBestScore = max(uiState.bestScore, currentNewScore)
 
         _homeScreenUiState.emit(
             uiState.copy(
                 gridTileMovements = newGridTileMovements,
                 isGameOver = checkIsGameOver(updatedGrid),
-                bestScore = max(uiState.bestScore, currentNewScore),
+                bestScore = newBestScore,
                 currentScore = currentNewScore
             )
         )
         increaseMoveCount()
+
+        saveGameRepository.saveGame(
+            updatedGrid,
+            currentNewScore,
+            newBestScore
+        )
     }
 
     private suspend fun increaseMoveCount(n: Int = 1) {
