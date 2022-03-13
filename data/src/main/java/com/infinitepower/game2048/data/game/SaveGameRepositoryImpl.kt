@@ -55,21 +55,4 @@ class SaveGameRepositoryImpl(
             newValue = bestScore
         )
     }
-
-    private fun createRandomAddedTile(
-        grid: List<List<Tile?>>
-    ): GridTileMovement? {
-        val emptyCells = grid.flatMapIndexed { row, tiles ->
-            tiles.mapIndexed { col, tile ->
-                if (tile == null) Cell(row, col) else null
-            }
-        }
-        val emptyCell = emptyCells.getOrNull(emptyCells.indices.random()) ?: return null
-        return GridTileMovement.add(
-            GridTile(
-                cell = emptyCell,
-                tile = if (Math.random() < 0.9f) Tile(2) else Tile(4)
-            )
-        )
-    }
 }

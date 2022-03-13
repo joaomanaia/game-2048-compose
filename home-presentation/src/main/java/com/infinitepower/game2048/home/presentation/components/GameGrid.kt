@@ -18,13 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
-import androidx.compose.ui.unit.sp
+import com.infinitepower.game2048.core.common.GameCommon.GRID_SIZE
 import com.infinitepower.game2048.core.ui.CustomColor
-import com.infinitepower.game2048.core.ui.Game2048Theme
 import com.infinitepower.game2048.core.ui.LocalExtendedColors
 import com.infinitepower.game2048.model.GridTileMovement
 import kotlin.math.ln
@@ -198,5 +195,3 @@ private fun ColorScheme.surfaceColorAtElevation(
 }
 
 private val GRID_TILE_RADIUS = 4.dp
-
-private const val GRID_SIZE = 4

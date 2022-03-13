@@ -72,7 +72,7 @@ private val DarkThemeColors = darkColorScheme(
 @Composable
 fun Game2048Theme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    isDynamic: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+    isDynamic: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

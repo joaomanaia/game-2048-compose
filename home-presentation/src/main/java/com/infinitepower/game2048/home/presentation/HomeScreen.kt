@@ -1,7 +1,8 @@
 package com.infinitepower.game2048.home.presentation
 
+import android.content.res.Configuration
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -22,9 +24,12 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.infinitepower.game2048.core.common.GameCommon.NUM_INITIAL_TILES
 import com.infinitepower.game2048.core.ui.Game2048Theme
 import com.infinitepower.game2048.core.ui.components.GameDialog
 import com.infinitepower.game2048.core.ui.spacing
+import com.infinitepower.game2048.core.util.createRandomAddedTile
+import com.infinitepower.game2048.core.util.emptyGrid
 import com.infinitepower.game2048.home.presentation.components.GameGrid
 import com.infinitepower.game2048.model.Direction
 import com.infinitepower.game2048.model.GridTileMovement
@@ -71,6 +76,9 @@ private fun HomeScreenContent(
     var resetGameDialog by remember {
         mutableStateOf(false)
     }
+    
+    val currentScoreAnimated by animateIntAsState(targetValue = currentScore)
+    val bestScoreAnimated by animateIntAsState(targetValue = bestScore)
 
     Scaffold(
         topBar = {
@@ -89,72 +97,71 @@ private fun HomeScreenContent(
             )
         }
     ) {
-        BoxWithConstraints {
-            val isPortrait = maxWidth < maxHeight
-            var totalDragDistance: Offset = Offset.Zero
+        val configuration = LocalConfiguration.current
+        val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-            val localViewConfiguration = LocalViewConfiguration.current
+        val localViewConfiguration = LocalViewConfiguration.current
+        var totalDragDistance: Offset = Offset.Zero
 
-            ConstraintLayout(
-                constraintSet = buildConstraints(isPortrait),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragEnd = {
-                                val (dx, dy) = totalDragDistance
-                                val swipeDistance = dist(dx, dy)
-                                if (swipeDistance < localViewConfiguration.touchSlop)
-                                    return@detectDragGestures
+        ConstraintLayout(
+            constraintSet = buildConstraints(isPortrait),
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragEnd = {
+                            val (dx, dy) = totalDragDistance
+                            val swipeDistance = dist(dx, dy)
+                            if (swipeDistance < localViewConfiguration.touchSlop)
+                                return@detectDragGestures
 
-                                val swipeAngle = atan2(dx, -dy)
-                                onSwipeListener(
-                                    when {
-                                        45 <= swipeAngle && swipeAngle < 135 -> Direction.Up
-                                        135 <= swipeAngle && swipeAngle < 225 -> Direction.Left
-                                        225 <= swipeAngle && swipeAngle < 315 -> Direction.Down
-                                        else -> Direction.Right
-                                    }
-                                )
-                            },
-                            onDragStart = {
-                                totalDragDistance = Offset.Zero
-                            }
-                        ) { change, dragAmount ->
-                            change.consumeAllChanges()
-                            totalDragDistance += dragAmount
+                            val swipeAngle = atan2(dx, -dy)
+                            onSwipeListener(
+                                when {
+                                    45 <= swipeAngle && swipeAngle < 135 -> Direction.Up
+                                    135 <= swipeAngle && swipeAngle < 225 -> Direction.Left
+                                    225 <= swipeAngle && swipeAngle < 315 -> Direction.Down
+                                    else -> Direction.Right
+                                }
+                            )
+                        },
+                        onDragStart = {
+                            totalDragDistance = Offset.Zero
                         }
+                    ) { change, dragAmount ->
+                        change.consumeAllChanges()
+                        totalDragDistance += dragAmount
                     }
-            ) {
-                GameGrid(
-                    gridTileMovements = gridTileMovements,
-                    moveCount = moveCount,
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .padding(MaterialTheme.spacing.medium)
-                        .layoutId("gameGrid")
-                )
-                TextLabel(
-                    text = "$currentScore",
-                    layoutId = "currentScoreText",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                TextLabel(
-                    text = "Score",
-                    layoutId = "currentScoreLabel",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                TextLabel(
-                    text = "$bestScore",
-                    layoutId = "bestScoreText",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                TextLabel(
-                    text = "Best",
-                    layoutId = "bestScoreLabel",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+                }
+        ) {
+            TextLabel(
+                text = "$currentScoreAnimated",
+                layoutId = "currentScoreText",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            TextLabel(
+                text = "Score",
+                layoutId = "currentScoreLabel",
+                style = MaterialTheme.typography.titleMedium
+            )
+            TextLabel(
+                text = "$bestScoreAnimated",
+                layoutId = "bestScoreText",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            TextLabel(
+                text = "Best",
+                layoutId = "bestScoreLabel",
+                style = MaterialTheme.typography.titleMedium
+            )
+            GameGrid(
+                gridTileMovements = gridTileMovements,
+                moveCount = moveCount,
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .padding(MaterialTheme.spacing.medium)
+                    .layoutId("gameGrid")
+            )
         }
 
         if (isGameOver) {
@@ -216,12 +223,12 @@ private fun buildConstraints(isPortrait: Boolean): ConstraintSet {
         if (isPortrait) {
             constrain(gameGrid) {
                 start.linkTo(parent.start)
-                top.linkTo(parent.top)
+                top.linkTo(currentScoreLabel.bottom, spaceMedium)
                 end.linkTo(parent.end)
             }
             constrain(currentScoreText) {
-                start.linkTo(gameGrid.start, spaceMedium)
-                top.linkTo(gameGrid.bottom)
+                start.linkTo(parent.start, spaceMedium)
+                top.linkTo(parent.top, spaceMedium)
             }
             constrain(currentScoreLabel) {
                 start.linkTo(currentScoreText.start)
@@ -229,7 +236,7 @@ private fun buildConstraints(isPortrait: Boolean): ConstraintSet {
             }
             constrain(bestScoreText) {
                 end.linkTo(gameGrid.end, spaceMedium)
-                top.linkTo(gameGrid.bottom)
+                top.linkTo(parent.top, spaceMedium)
             }
             constrain(bestScoreLabel) {
                 end.linkTo(bestScoreText.end)
@@ -243,19 +250,19 @@ private fun buildConstraints(isPortrait: Boolean): ConstraintSet {
             }
             constrain(currentScoreText) {
                 start.linkTo(currentScoreLabel.start)
-                bottom.linkTo(currentScoreLabel.top)
+                top.linkTo(gameGrid.top, spaceMedium)
             }
             constrain(currentScoreLabel) {
                 start.linkTo(bestScoreText.start)
-                bottom.linkTo(bestScoreText.top)
+                top.linkTo(currentScoreText.bottom)
             }
             constrain(bestScoreText) {
                 start.linkTo(bestScoreLabel.start)
-                bottom.linkTo(bestScoreLabel.top)
+                top.linkTo(currentScoreLabel.bottom, spaceMedium)
             }
             constrain(bestScoreLabel) {
                 start.linkTo(gameGrid.end)
-                bottom.linkTo(gameGrid.bottom, spaceMedium)
+                top.linkTo(bestScoreText.bottom)
             }
             createHorizontalChain(gameGrid, bestScoreLabel, chainStyle = ChainStyle.Packed)
         }

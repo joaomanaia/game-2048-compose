@@ -4,6 +4,7 @@ import com.infinitepower.game2048.buildsrc.Testing
 import com.infinitepower.game2048.buildsrc.Material
 import com.infinitepower.game2048.buildsrc.Compose
 import com.infinitepower.game2048.buildsrc.DataStore
+import com.infinitepower.game2048.buildsrc.Modules
 import com.infinitepower.game2048.buildsrc.Hilt
 
 plugins {
@@ -78,4 +79,6 @@ dependencies {
     implementation(Compose.composeMaterial3)
 
     implementation(DataStore.dataStorePreferences)
+
+    implementation(project(Modules.model))
 }
