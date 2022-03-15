@@ -76,6 +76,7 @@ dependencies {
     implementation(Compose.composeUi)
     implementation(Compose.composeUiToolingPreview)
     implementation(Compose.iconsExtended)
+    implementation(Compose.navigation)
 
     implementation(Hilt.hiltAndroid)
     kapt(Hilt.hiltCompiler)
@@ -88,4 +89,5 @@ dependencies {
 
     implementation(project(Modules.core))
     implementation(project(Modules.homePresentation))
+    implementation(project(Modules.settingsPresentation))
 }

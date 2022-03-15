@@ -77,8 +77,14 @@ dependencies {
     implementation(Material.material)
 
     implementation(Compose.composeMaterial3)
+    implementation(Compose.composeMaterial)
 
     implementation(DataStore.dataStorePreferences)
 
     implementation(project(Modules.model))
+}
+
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

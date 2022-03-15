@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -24,7 +25,9 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.infinitepower.game2048.core.common.GameCommon.NUM_INITIAL_TILES
+import com.infinitepower.game2048.core.navigation.Screen
 import com.infinitepower.game2048.core.ui.Game2048Theme
 import com.infinitepower.game2048.core.ui.components.GameDialog
 import com.infinitepower.game2048.core.ui.spacing
@@ -40,9 +43,11 @@ import kotlin.math.sqrt
  */
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val homeScreenUiState by homeViewModel.homeScreenUiState.collectAsState()
+    val gridSize by homeViewModel.gridSize.collectAsState()
 
     HomeScreenContent(
         gridTileMovements = homeScreenUiState.gridTileMovements,
@@ -54,8 +59,12 @@ fun HomeScreen(
         moveCount = homeScreenUiState.moveCount,
         isGameOver = homeScreenUiState.isGameOver,
         onNewGameRequested = {
-            homeViewModel.onEvent(HomeScreenUiEvent.OnStartNewGameClick)
-        }
+            homeViewModel.onEvent(HomeScreenUiEvent.OnStartNewGameRequest)
+        },
+        navigateToSettings = {
+            navController.navigate(Screen.SettingsScreen.route)
+        },
+        gridSize = gridSize
     )
 }
 
@@ -70,8 +79,10 @@ private fun HomeScreenContent(
     bestScore: Int,
     moveCount: Int,
     isGameOver: Boolean,
+    gridSize: Int,
     onNewGameRequested: () -> Unit,
     onSwipeListener: (direction: Direction) -> Unit,
+    navigateToSettings: () -> Unit,
 ) {
     var resetGameDialog by remember {
         mutableStateOf(false)
@@ -91,6 +102,12 @@ private fun HomeScreenContent(
                         Icon(
                             imageVector = Icons.Rounded.Refresh,
                             contentDescription = "Reset Game"
+                        )
+                    }
+                    IconButton(onClick = navigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = "Settings"
                         )
                     }
                 }
@@ -160,7 +177,8 @@ private fun HomeScreenContent(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(MaterialTheme.spacing.medium)
-                    .layoutId("gameGrid")
+                    .layoutId("gameGrid"),
+                gridSize = gridSize
             )
         }
 
@@ -273,7 +291,7 @@ private fun buildConstraints(isPortrait: Boolean): ConstraintSet {
 @Preview(showBackground = true)
 private fun HomeScreenContentPrev() {
     val newGridTileMovements = (0 until NUM_INITIAL_TILES).mapNotNull {
-        createRandomAddedTile(emptyGrid())
+        createRandomAddedTile(emptyGrid(4))
     }
 
     Game2048Theme {
@@ -285,6 +303,8 @@ private fun HomeScreenContentPrev() {
             isGameOver = false,
             onNewGameRequested = {},
             onSwipeListener = {},
+            navigateToSettings = {},
+            gridSize = 4
         )
     }
 }

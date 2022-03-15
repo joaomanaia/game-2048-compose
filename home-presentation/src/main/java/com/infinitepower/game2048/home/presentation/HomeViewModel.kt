@@ -22,42 +22,53 @@ class HomeViewModel @Inject constructor(
 
     fun onEvent(event: HomeScreenUiEvent) = viewModelScope.launch(Dispatchers.IO) {
         when (event) {
-            is HomeScreenUiEvent.OnStartNewGameClick -> startNewGame()
+            is HomeScreenUiEvent.OnStartNewGameRequest -> startNewGame()
             is HomeScreenUiEvent.OnMoveGrid -> move(event.direction)
         }
     }
 
-    private val grid = MutableStateFlow(emptyGrid())
+    private val _gridSize = MutableStateFlow(0)
+    val gridSize = _gridSize.asStateFlow()
+
+    private val grid = MutableStateFlow<List<List<Tile?>>>(emptyList())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            if (saveGameRepository.checkSaveGameExists()) {
-                // Restore a previously saved game.
-                val savedGrid = saveGameRepository.getSavedGrid()
-                grid.emit(savedGrid)
+            saveGameRepository.getGridSizeFlow().collect { size ->
+                _gridSize.emit(size)
 
-                _homeScreenUiState.emit(
-                    homeScreenUiState.first().copy(
-                        gridTileMovements = saveGameRepository.getSavedGridTileMovements(),
-                        currentScore = saveGameRepository.getSavedCurrentScore(),
-                        bestScore = saveGameRepository.getSavedBestScore(),
-                        isGameOver = checkIsGameOver(savedGrid)
-                    )
-                )
-            } else {
-                startNewGame()
+                if (saveGameRepository.checkSaveGameExists()) {
+                    // Restore a previously saved game.
+                    val savedGrid = saveGameRepository.getSavedGrid()
+                    if (savedGrid.first().size == size) {
+                        grid.emit(savedGrid)
+
+                        _homeScreenUiState.emit(
+                            homeScreenUiState.first().copy(
+                                gridTileMovements = saveGameRepository.getSavedGridTileMovements(),
+                                currentScore = saveGameRepository.getSavedCurrentScore(),
+                                bestScore = saveGameRepository.getSavedBestScore(),
+                                isGameOver = checkIsGameOver(savedGrid, size)
+                            )
+                        )
+                    } else {
+                        startNewGame()
+                    }
+                } else {
+                    startNewGame()
+                }
             }
         }
     }
 
     private suspend fun startNewGame() {
         val newGridTileMovements = (0 until NUM_INITIAL_TILES).mapNotNull {
-            createRandomAddedTile(emptyGrid())
+            createRandomAddedTile(emptyGrid(gridSize.first()))
         }
 
         val addedGridTiles = newGridTileMovements.map { it.toGridTile }
 
-        val newGrid = emptyGrid().map { row, col, _ ->
+        val newGrid = emptyGrid(gridSize.first()).map { row, col, _ ->
             addedGridTiles.find { row == it.cell.row && col == it.cell.col }?.tile
         }
         grid.emit(newGrid)
@@ -76,7 +87,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun move(direction: Direction) {
-        var (updatedGrid, updatedGridTileMovements) = makeMove(grid.first(), direction)
+        var (updatedGrid, updatedGridTileMovements) = makeMove(grid.first(), direction, gridSize.first())
 
         if (!hasGridChanged(updatedGridTileMovements)) return // No tiles were moved.
 
@@ -102,7 +113,7 @@ class HomeViewModel @Inject constructor(
         _homeScreenUiState.emit(
             uiState.copy(
                 gridTileMovements = newGridTileMovements,
-                isGameOver = checkIsGameOver(updatedGrid),
+                isGameOver = checkIsGameOver(updatedGrid, gridSize.first()),
                 bestScore = newBestScore,
                 currentScore = currentNewScore
             )

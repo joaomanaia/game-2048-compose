@@ -7,7 +7,7 @@ fun <T> List<List<T>>.map(
         T
     ) -> T
 ): List<List<T>> = mapIndexed { row, rowTiles ->
-    rowTiles.mapIndexed { col, colTiles ->
-        transform(row, col, colTiles)
+    rowTiles.mapIndexed { col, colTile ->
+        transform(row, col, colTile)
     }
 }

@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.infinitepower.game2048.core.common.GameCommon.GRID_SIZE
 import com.infinitepower.game2048.core.ui.CustomColor
 import com.infinitepower.game2048.core.ui.LocalExtendedColors
 import com.infinitepower.game2048.model.GridTileMovement
@@ -32,20 +31,21 @@ internal fun GameGrid(
     modifier: Modifier = Modifier,
     gridTileMovements: List<GridTileMovement>,
     moveCount: Int,
+    gridSize: Int
 ) {
     BoxWithConstraints(modifier) {
         val width = with(LocalDensity.current) { maxWidth.toPx() }
         val height = with(LocalDensity.current) { maxHeight.toPx() }
         val tileMarginPx = with(LocalDensity.current) { 4.dp.toPx() }
-        val tileSizePx = ((min(width, height) - tileMarginPx * (GRID_SIZE - 1)) / GRID_SIZE).coerceAtLeast(0f)
+        val tileSizePx = ((min(width, height) - tileMarginPx * (gridSize - 1)) / gridSize).coerceAtLeast(0f)
         val tileSizeDp = Dp(tileSizePx / LocalDensity.current.density)
         val tileOffsetPx = tileSizePx + tileMarginPx
         val emptyTileColor = surfaceColorAtElevation(color = MaterialTheme.colorScheme.surface, elevation = 8.dp)
         Box(
             modifier = Modifier.drawBehind {
                 // Draw the background empty tiles.
-                for (row in 0 until GRID_SIZE) {
-                    for (col in 0 until GRID_SIZE) {
+                for (row in 0 until gridSize) {
+                    for (col in 0 until gridSize) {
                         drawRoundRect(
                             color = emptyTileColor,
                             topLeft = Offset(col * tileOffsetPx, row * tileOffsetPx),
@@ -76,7 +76,7 @@ internal fun GameGrid(
                         fromScale = fromScale,
                         fromOffset = fromOffset,
                         toOffset = toOffset,
-                        moveCount = moveCount,
+                        moveCount = moveCount
                     )
                 }
             }
@@ -91,7 +91,7 @@ private fun GridTileText(
     fromScale: Float,
     fromOffset: Offset,
     toOffset: Offset,
-    moveCount: Int,
+    moveCount: Int
 ) {
     val animatedScale = remember {
         Animatable(fromScale)

@@ -4,6 +4,8 @@ import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.flow.Flow
 
 interface DataStoreManager {
+    val preferenceFlow: Flow<Preferences>
+
     suspend fun <T> getPreference(preferenceEntry: PreferenceRequest<T>): T
 
     fun <T> getPreferenceFlow(request: PreferenceRequest<T>): Flow<T>
