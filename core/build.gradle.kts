@@ -58,9 +58,6 @@ dependencies {
 
     testImplementation(Testing.junit)
     testImplementation(Testing.junitJupiter)
-    androidTestImplementation(Testing.junitAndroidExt)
-    androidTestImplementation(Testing.espressoCore)
-    androidTestImplementation(Testing.composeUiTestJunit4)
 
     debugImplementation(Compose.uiTooling)
     debugImplementation(Compose.uiTestManifest)
@@ -70,9 +67,6 @@ dependencies {
     implementation(Hilt.hiltAndroid)
     kapt(Hilt.hiltCompiler)
     kapt(Hilt.androidXHiltCompiler)
-    implementation(Hilt.navigationCompose)
-    androidTestImplementation(Hilt.hiltAndroidTesting)
-    kaptAndroidTest(Hilt.hiltAndroidCompiler)
 
     implementation(Material.material)
 

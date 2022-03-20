@@ -5,6 +5,7 @@ A simple 2048 game written with 100% Jetpack Compose.
 ## Features
 - Jetpack Compose
 - Material 3
+- MVVM
 - Adaptable theme
 - Datastore Preferences
 - Multiple grid sizes
@@ -14,7 +15,7 @@ Grid items will automatically harmonize to the theme.
 
 If you exit the game or want to continue later, all will be saved in datastore. So next time you open the app you have your last game played and your best score.
 
-![Screenshot of app](pictures/game2048-screenshot.jpg)
+![Screenshot of app](pictures/game2048-anim.gif)
 
 ## Multiple grid sizes
 

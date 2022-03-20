@@ -11,4 +11,7 @@ object AndroidX {
 
     const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     const val lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+
+    private const val annotationVersion = "1.3.0"
+    const val annotation = "androidx.annotation:annotation:$annotationVersion"
 }

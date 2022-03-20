@@ -38,13 +38,7 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.coreKtx)
-    implementation(AndroidX.lifecycleRuntimeKtx)
+    implementation(AndroidX.annotation)
 
     implementation(Kotlinx.serialization)
-
-    testImplementation(Testing.junit)
-    androidTestImplementation(Testing.junitAndroidExt)
-    androidTestImplementation(Testing.espressoCore)
-    androidTestImplementation(Testing.composeUiTestJunit4)
 }

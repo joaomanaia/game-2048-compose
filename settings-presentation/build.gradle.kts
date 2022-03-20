@@ -58,11 +58,6 @@ dependencies {
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.lifecycleRuntimeKtx)
 
-    testImplementation(Testing.junit)
-    androidTestImplementation(Testing.junitAndroidExt)
-    androidTestImplementation(Testing.espressoCore)
-    androidTestImplementation(Testing.composeUiTestJunit4)
-
     debugImplementation(Compose.uiTooling)
     debugImplementation(Compose.uiTestManifest)
     implementation(Compose.composeUi)
@@ -78,8 +73,6 @@ dependencies {
     kapt(Hilt.hiltCompiler)
     kapt(Hilt.androidXHiltCompiler)
     implementation(Hilt.navigationCompose)
-    androidTestImplementation(Hilt.hiltAndroidTesting)
-    kaptAndroidTest(Hilt.hiltAndroidCompiler)
 
     implementation(project(Modules.core))
     implementation(project(Modules.domain))

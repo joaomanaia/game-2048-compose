@@ -101,13 +101,13 @@ private fun HomeScreenContent(
                     IconButton(onClick = { resetGameDialog = true }) {
                         Icon(
                             imageVector = Icons.Rounded.Refresh,
-                            contentDescription = "Reset Game"
+                            contentDescription = stringResource(id = com.infinitepower.game2048.core.R.string.reset_game)
                         )
                     }
                     IconButton(onClick = navigateToSettings) {
                         Icon(
                             imageVector = Icons.Rounded.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = stringResource(id = com.infinitepower.game2048.core.R.string.settings)
                         )
                     }
                 }
@@ -157,7 +157,7 @@ private fun HomeScreenContent(
                 style = MaterialTheme.typography.headlineMedium
             )
             TextLabel(
-                text = "Score",
+                text = stringResource(id = com.infinitepower.game2048.core.R.string.score),
                 layoutId = "currentScoreLabel",
                 style = MaterialTheme.typography.titleMedium
             )
@@ -167,7 +167,7 @@ private fun HomeScreenContent(
                 style = MaterialTheme.typography.headlineMedium
             )
             TextLabel(
-                text = "Best",
+                text = stringResource(id = com.infinitepower.game2048.core.R.string.best),
                 layoutId = "bestScoreLabel",
                 style = MaterialTheme.typography.titleMedium
             )
@@ -184,15 +184,15 @@ private fun HomeScreenContent(
 
         if (isGameOver) {
             GameDialog(
-                title = "Game Over",
-                message = "Start a new game?",
+                title = stringResource(id = com.infinitepower.game2048.core.R.string.game_over),
+                message = stringResource(id = com.infinitepower.game2048.core.R.string.start_new_game_q),
                 onConfirmListener = onNewGameRequested,
                 onDismissListener = { resetGameDialog = false }
             )
         } else if (resetGameDialog) {
             GameDialog(
-                title = "Start a new game?",
-                message = "Starting a new game will erase your current game",
+                title = stringResource(id = com.infinitepower.game2048.core.R.string.start_new_game_q),
+                message = stringResource(id = com.infinitepower.game2048.core.R.string.start_new_game_warning),
                 onConfirmListener = {
                     onNewGameRequested()
                     resetGameDialog = false

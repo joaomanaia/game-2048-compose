@@ -1,7 +1,6 @@
 import com.infinitepower.game2048.buildsrc.ProjectConfig
 import com.infinitepower.game2048.buildsrc.AndroidX
 import com.infinitepower.game2048.buildsrc.Compose
-import com.infinitepower.game2048.buildsrc.Testing
 import com.infinitepower.game2048.buildsrc.Hilt
 import com.infinitepower.game2048.buildsrc.Material
 import com.infinitepower.game2048.buildsrc.Modules
@@ -62,11 +61,6 @@ dependencies {
     implementation(AndroidX.coreKtx)
     implementation(AndroidX.lifecycleRuntimeKtx)
 
-    testImplementation(Testing.junit)
-    androidTestImplementation(Testing.junitAndroidExt)
-    androidTestImplementation(Testing.espressoCore)
-    androidTestImplementation(Testing.composeUiTestJunit4)
-
     implementation(AndroidX.activityCompose)
 
     implementation(Compose.composeMaterial3)
@@ -82,8 +76,6 @@ dependencies {
     kapt(Hilt.hiltCompiler)
     kapt(Hilt.androidXHiltCompiler)
     implementation(Hilt.navigationCompose)
-    androidTestImplementation(Hilt.hiltAndroidTesting)
-    kaptAndroidTest(Hilt.hiltAndroidCompiler)
 
     implementation(Material.material)
 

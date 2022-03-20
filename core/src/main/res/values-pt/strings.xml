@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jogo 2048</string>
+    <string name="grid_size">Tamanho da grelha</string>
+    <string name="grid_size_summary">Altere o tamanho da grelha para aumentar ou diminuir o tamanho da prancha.</string>
+    <string name="grid_size_3">3 X 3</string>
+    <string name="grid_size_4">4 X 4</string>
+    <string name="grid_size_5">5 X 5</string>
+    <string name="grid_size_6">6 X 6</string>
+    <string name="grid_size_7">7 X 7</string>
+    <string name="reset_game">Recomeçar Jogo</string>
+    <string name="settings">Definições</string>
+    <string name="score">Pontuação</string>
+    <string name="best">Melhor</string>
+    <string name="game_over">Fim do jogo</string>
+    <string name="start_new_game_q">Começar um novo jogo?</string>
+    <string name="start_new_game_warning">Começar um novo jogo vai apagar o teu jogo atual</string>
+    <string name="back">Voltar</string>
+</resources>

@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,6 +18,7 @@ import com.infinitepower.game2048.core.datastore.manager.DataStoreManager
 import com.infinitepower.game2048.core.datastore.manager.settings.SettingsPreference
 import com.infinitepower.game2048.core.ui.spacing
 import com.infinitepower.game2048.settings.presentation.components.SettingsPreferenceItem
+import com.infinitepower.game2048.settings.presentation.components.icons.Grid4x4
 
 @Composable
 fun SettingsScreen(
@@ -55,7 +55,7 @@ private fun SettingsScreenContent(
             singleLineTitle = true,
             icon = {
                 Icon(
-                    imageVector = Icons.Rounded.Warning,
+                    imageVector = Icons.Rounded.Grid4x4,
                     contentDescription = stringResource(id = com.infinitepower.game2048.core.R.string.grid_size),
                     modifier = Modifier.padding(MaterialTheme.spacing.small)
                 )
@@ -71,13 +71,13 @@ private fun SettingsScreenContent(
         topBar = {
             LargeTopAppBar(
                 title = {
-                    Text(text = "Settings")
+                    Text(text = stringResource(id = com.infinitepower.game2048.core.R.string.settings))
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(id = com.infinitepower.game2048.core.R.string.back)
                         )
                     }
                 }
