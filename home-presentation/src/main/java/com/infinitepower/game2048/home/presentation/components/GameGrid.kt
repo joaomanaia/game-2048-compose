@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.infinitepower.game2048.core.ui.CustomColor
@@ -31,7 +32,8 @@ internal fun GameGrid(
     modifier: Modifier = Modifier,
     gridTileMovements: List<GridTileMovement>,
     moveCount: Int,
-    gridSize: Int
+    gridSize: Int,
+    isPortrait: Boolean
 ) {
     BoxWithConstraints(modifier) {
         val width = with(LocalDensity.current) { maxWidth.toPx() }
@@ -76,7 +78,9 @@ internal fun GameGrid(
                         fromScale = fromScale,
                         fromOffset = fromOffset,
                         toOffset = toOffset,
-                        moveCount = moveCount
+                        moveCount = moveCount,
+                        gridSize = gridSize,
+                        isPortrait = isPortrait
                     )
                 }
             }
@@ -91,7 +95,9 @@ private fun GridTileText(
     fromScale: Float,
     fromOffset: Offset,
     toOffset: Offset,
-    moveCount: Int
+    moveCount: Int,
+    gridSize: Int,
+    isPortrait: Boolean
 ) {
     val animatedScale = remember {
         Animatable(fromScale)
@@ -116,7 +122,18 @@ private fun GridTileText(
             )
             .wrapContentSize(),
         color = getTileTextColor(num = num),
-        style = MaterialTheme.typography.headlineSmall
+        style = when  {
+            gridSize == 3 -> MaterialTheme.typography.headlineMedium
+            gridSize == 4 && !isPortrait -> MaterialTheme.typography.titleLarge
+            gridSize == 5 && isPortrait -> MaterialTheme.typography.titleLarge
+            gridSize == 5 && !isPortrait -> MaterialTheme.typography.titleMedium
+            gridSize == 6 && isPortrait -> MaterialTheme.typography.titleMedium
+            gridSize == 6 && !isPortrait -> MaterialTheme.typography.titleSmall
+            gridSize == 7 && isPortrait -> MaterialTheme.typography.titleSmall
+            gridSize == 7 && !isPortrait -> MaterialTheme.typography.bodySmall
+            else -> MaterialTheme.typography.headlineSmall
+        },
+        textAlign = TextAlign.Center
     )
 
     LaunchedEffect(key1 = moveCount) {

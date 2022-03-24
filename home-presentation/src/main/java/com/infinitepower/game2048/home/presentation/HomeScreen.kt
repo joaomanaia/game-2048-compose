@@ -178,7 +178,8 @@ private fun HomeScreenContent(
                     .aspectRatio(1f)
                     .padding(MaterialTheme.spacing.medium)
                     .layoutId("gameGrid"),
-                gridSize = gridSize
+                gridSize = gridSize,
+                isPortrait = isPortrait
             )
         }
 
