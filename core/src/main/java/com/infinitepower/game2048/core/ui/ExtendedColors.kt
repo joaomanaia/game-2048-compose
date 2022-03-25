@@ -1,6 +1,6 @@
 package com.infinitepower.game2048.core.ui
 
-
+import android.util.Log
 import androidx.annotation.Keep
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -17,7 +17,7 @@ data class CustomColor(
     val key: Keys,
     val color: Color,
     val harmonized: Boolean,
-    val roles: ColorRoles? = null
+    val roles: ColorRoles
 ) {
     enum class Keys {
         Tile2,
@@ -42,13 +42,19 @@ data class CustomColor(
     )
 }
 
-private fun ColorRoles.toColorRoles(): CustomColor.ColorRoles =
-    CustomColor.ColorRoles(
-        accent = Color(this.accent),
-        onAccent = Color(this.onAccent),
-        accentContainer = Color(this.accentContainer),
-        onAccentContainer = Color(this.onAccentContainer),
-    )
+private fun initializeColorRoles() = CustomColor.ColorRoles(
+    accent = Color.Unspecified,
+    onAccent = Color.Unspecified,
+    accentContainer = Color.Unspecified,
+    onAccentContainer = Color.Unspecified,
+)
+
+private fun ColorRoles.toColorRoles(): CustomColor.ColorRoles = CustomColor.ColorRoles(
+    accent = Color(this.accent),
+    onAccent = Color(this.onAccent),
+    accentContainer = Color(this.accentContainer),
+    onAccentContainer = Color(this.onAccentContainer),
+)
 
 @Keep
 data class ExtendedColors(
@@ -61,7 +67,7 @@ data class ExtendedColors(
     ): CustomColor.ColorRoles {
         val color = colors.find { color -> color.key == key }
 
-        return if (color != null && color.harmonized && color.roles != null) {
+        return if (color != null && color.harmonized) {
             color.roles
         } else {
             CustomColor.ColorRoles(
@@ -92,56 +98,67 @@ private val initializeExtend = ExtendedColors(
             key = CustomColor.Keys.Tile2,
             color = Color(238, 228, 218),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile4,
             color = Color(237, 224, 200),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile8,
             color = Color(242, 177, 121),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile16,
             color = Color(245, 149, 99),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile32,
             color = Color(246, 124, 95),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile64,
             color = Color(246, 94, 59),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile128,
             color = Color(237, 207, 114),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile256,
             color = Color(237, 204, 97),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile512,
             color = Color(237, 200, 80),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile1024,
             color = Color(237, 197, 63),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
         CustomColor(
             key = CustomColor.Keys.Tile2048,
             color = Color(237, 194, 63),
             harmonized = true,
+            roles = initializeColorRoles()
         ),
     )
 )

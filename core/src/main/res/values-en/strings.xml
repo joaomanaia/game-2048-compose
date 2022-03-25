@@ -16,4 +16,6 @@
     <string name="start_new_game_q">Start a new game?</string>
     <string name="back">Back</string>
     <string name="start_new_game_warning">Starting a new game will erase your current game</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

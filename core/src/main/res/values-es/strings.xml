@@ -16,4 +16,6 @@
     <string name="start_new_game_q">¿Comenzar un nuevo juego?</string>
     <string name="start_new_game_warning">Comenzar un nuevo juego borrará tu juego actual</string>
     <string name="back">Atrás</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
 </resources>

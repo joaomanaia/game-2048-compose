@@ -17,7 +17,6 @@
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/home-presentation" />
             <option value="$PROJECT_DIR$/model" />
-            <option value="$PROJECT_DIR$/settings-presentation" />
           </set>
         </option>
       </GradleProjectSettings>

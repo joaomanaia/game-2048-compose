@@ -8,4 +8,8 @@ sealed class HomeScreenUiEvent {
     data class OnMoveGrid(
         val direction: Direction
     ) : HomeScreenUiEvent()
+
+    data class OnGridSizeChange(
+        val newSize: String
+    ) : HomeScreenUiEvent()
 }

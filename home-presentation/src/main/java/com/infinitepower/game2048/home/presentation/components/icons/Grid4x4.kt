@@ -1,4 +1,4 @@
-package com.infinitepower.game2048.settings.presentation.components.icons
+package com.infinitepower.game2048.home.presentation.components.icons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon

@@ -24,6 +24,7 @@ class HomeViewModel @Inject constructor(
         when (event) {
             is HomeScreenUiEvent.OnStartNewGameRequest -> startNewGame()
             is HomeScreenUiEvent.OnMoveGrid -> move(event.direction)
+            is HomeScreenUiEvent.OnGridSizeChange -> changeGridSize(event.newSize)
         }
     }
 
@@ -130,5 +131,9 @@ class HomeViewModel @Inject constructor(
     private suspend fun increaseMoveCount(n: Int = 1) {
         val uiState = homeScreenUiState.first()
         _homeScreenUiState.emit(uiState.copy(moveCount = uiState.moveCount + n))
+    }
+
+    private suspend fun changeGridSize(newSize: String) {
+        saveGameRepository.updateGridSize(newSize.toInt())
     }
 }

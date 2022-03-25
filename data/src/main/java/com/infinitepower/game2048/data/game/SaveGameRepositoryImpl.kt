@@ -47,6 +47,13 @@ class SaveGameRepositoryImpl(
                 sizeStr.toIntOrNull() ?: 4
             }
 
+    override suspend fun updateGridSize(newSize: Int) {
+        gameDataStoreManager.editPreference(
+            key = GameDataPreferencesCommon.GridSize.key,
+            newValue = newSize.toString()
+        )
+    }
+
     override suspend fun saveGame(grid: List<List<Tile?>>, currentScore: Int) {
         val gridStr = Json.encodeToString(grid)
         gameDataStoreManager.editPreference(

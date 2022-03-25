@@ -25,7 +25,4 @@ object Compose {
 
     private const val constraintLayoutVersion = "1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:$constraintLayoutVersion"
-
-    private const val navVersion = "2.4.1"
-    const val navigation = "androidx.navigation:navigation-compose:$navVersion"
 }

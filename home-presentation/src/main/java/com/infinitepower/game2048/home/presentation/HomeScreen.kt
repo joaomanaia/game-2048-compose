@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -25,9 +25,7 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.infinitepower.game2048.core.common.GameCommon.NUM_INITIAL_TILES
-import com.infinitepower.game2048.core.navigation.Screen
 import com.infinitepower.game2048.core.ui.Game2048Theme
 import com.infinitepower.game2048.core.ui.components.GameDialog
 import com.infinitepower.game2048.core.ui.spacing
@@ -37,14 +35,16 @@ import com.infinitepower.game2048.home.presentation.components.GameGrid
 import com.infinitepower.game2048.model.Direction
 import com.infinitepower.game2048.model.GridTileMovement
 import kotlin.math.sqrt
+import com.infinitepower.game2048.core.R
+import com.infinitepower.game2048.home.presentation.components.ChangeGameGridDialog
+import com.infinitepower.game2048.home.presentation.components.icons.Grid4x4
 
 /**
  * 2040 game home screen
  */
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel(),
-    navController: NavHostController
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val homeScreenUiState by homeViewModel.homeScreenUiState.collectAsState()
     val gridSize by homeViewModel.gridSize.collectAsState()
@@ -61,8 +61,8 @@ fun HomeScreen(
         onNewGameRequested = {
             homeViewModel.onEvent(HomeScreenUiEvent.OnStartNewGameRequest)
         },
-        navigateToSettings = {
-            navController.navigate(Screen.SettingsScreen.route)
+        onGridSizeChange = { newSize ->
+            homeViewModel.onEvent(HomeScreenUiEvent.OnGridSizeChange(newSize))
         },
         gridSize = gridSize
     )
@@ -82,12 +82,18 @@ private fun HomeScreenContent(
     gridSize: Int,
     onNewGameRequested: () -> Unit,
     onSwipeListener: (direction: Direction) -> Unit,
-    navigateToSettings: () -> Unit,
+    onGridSizeChange: (newSize: String) -> Unit,
 ) {
-    var resetGameDialog by remember {
+    val (resetDialogVisible, setResetDialogVisible) = remember {
         mutableStateOf(false)
     }
-    
+    val (optionsVisible, setOptionsVisible) = remember {
+        mutableStateOf(false)
+    }
+    val (changeGridDialogVisible, setChangeGridDialogVisible) = remember {
+        mutableStateOf(false)
+    }
+
     val currentScoreAnimated by animateIntAsState(targetValue = currentScore)
     val bestScoreAnimated by animateIntAsState(targetValue = bestScore)
 
@@ -95,19 +101,40 @@ private fun HomeScreenContent(
         topBar = {
             SmallTopAppBar(
                 title = {
-                    Text(text = stringResource(id = com.infinitepower.game2048.core.R.string.app_name))
+                    Text(text = stringResource(id = R.string.app_name))
                 },
                 actions = {
-                    IconButton(onClick = { resetGameDialog = true }) {
+                    IconButton(onClick = { setResetDialogVisible(true) }) {
                         Icon(
                             imageVector = Icons.Rounded.Refresh,
-                            contentDescription = stringResource(id = com.infinitepower.game2048.core.R.string.reset_game)
+                            contentDescription = stringResource(id = R.string.reset_game)
                         )
                     }
-                    IconButton(onClick = navigateToSettings) {
+                    IconButton(onClick = { setOptionsVisible(true) }) {
                         Icon(
-                            imageVector = Icons.Rounded.Settings,
-                            contentDescription = stringResource(id = com.infinitepower.game2048.core.R.string.settings)
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = stringResource(id = R.string.settings)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = optionsVisible,
+                        onDismissRequest = { setOptionsVisible(false) }
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = stringResource(id = R.string.grid_size))
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Grid4x4,
+                                    contentDescription = stringResource(id = R.string.grid_size)
+                                )
+                            },
+                            onClick = {
+                                setOptionsVisible(false)
+                                setChangeGridDialogVisible(true)
+                            }
                         )
                     }
                 }
@@ -157,7 +184,7 @@ private fun HomeScreenContent(
                 style = MaterialTheme.typography.headlineMedium
             )
             TextLabel(
-                text = stringResource(id = com.infinitepower.game2048.core.R.string.score),
+                text = stringResource(id = R.string.score),
                 layoutId = "currentScoreLabel",
                 style = MaterialTheme.typography.titleMedium
             )
@@ -167,7 +194,7 @@ private fun HomeScreenContent(
                 style = MaterialTheme.typography.headlineMedium
             )
             TextLabel(
-                text = stringResource(id = com.infinitepower.game2048.core.R.string.best),
+                text = stringResource(id = R.string.best),
                 layoutId = "bestScoreLabel",
                 style = MaterialTheme.typography.titleMedium
             )
@@ -183,22 +210,29 @@ private fun HomeScreenContent(
             )
         }
 
-        if (isGameOver) {
-            GameDialog(
-                title = stringResource(id = com.infinitepower.game2048.core.R.string.game_over),
-                message = stringResource(id = com.infinitepower.game2048.core.R.string.start_new_game_q),
+        when {
+            isGameOver -> GameDialog(
+                title = stringResource(id = R.string.game_over),
+                message = stringResource(id = R.string.start_new_game_q),
                 onConfirmListener = onNewGameRequested,
-                onDismissListener = { resetGameDialog = false }
+                onDismissListener = { setResetDialogVisible(false) }
             )
-        } else if (resetGameDialog) {
-            GameDialog(
-                title = stringResource(id = com.infinitepower.game2048.core.R.string.start_new_game_q),
-                message = stringResource(id = com.infinitepower.game2048.core.R.string.start_new_game_warning),
+            resetDialogVisible -> GameDialog(
+                title = stringResource(id = R.string.start_new_game_q),
+                message = stringResource(id = R.string.start_new_game_warning),
                 onConfirmListener = {
                     onNewGameRequested()
-                    resetGameDialog = false
+                    setResetDialogVisible(false)
                 },
-                onDismissListener = { resetGameDialog = false }
+                onDismissListener = { setResetDialogVisible(false) }
+            )
+            changeGridDialogVisible -> ChangeGameGridDialog(
+                currentSize = gridSize.toString(),
+                onDismissRequest = { setChangeGridDialogVisible(false) },
+                onGridSizeChange = { newSize ->
+                    setChangeGridDialogVisible(false)
+                    onGridSizeChange(newSize)
+                }
             )
         }
     }
@@ -304,7 +338,7 @@ private fun HomeScreenContentPrev() {
             isGameOver = false,
             onNewGameRequested = {},
             onSwipeListener = {},
-            navigateToSettings = {},
+            onGridSizeChange = {},
             gridSize = 4
         )
     }

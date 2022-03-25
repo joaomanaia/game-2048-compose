@@ -19,6 +19,8 @@ interface SaveGameRepository {
 
     fun getGridSizeFlow(): Flow<Int>
 
+    suspend fun updateGridSize(newSize: Int)
+
     suspend fun saveGame(
         grid: List<List<Tile?>>,
         currentScore: Int
