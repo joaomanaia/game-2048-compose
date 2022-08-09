@@ -14,8 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Game2048"
 include(":app")
-include(":core")
-include(":home-presentation")
-include(":model")
-include(":data")
-include(":domain")

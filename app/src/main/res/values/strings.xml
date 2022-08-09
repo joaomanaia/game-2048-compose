@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">Game2048</string>
+    <string name="app_name">Game 2048</string>
+    <string name="grid_size">Grid Size</string>
+    <string name="grid_size_summary">Change grid size to increase or decrease your board size.</string>
+    <string name="grid_size_3">3 X 3</string>
+    <string name="grid_size_4">4 X 4</string>
+    <string name="grid_size_5">5 X 5</string>
+    <string name="grid_size_6">6 X 6</string>
+    <string name="grid_size_7">7 X 7</string>
+    <string name="reset_game">Reset Game</string>
+    <string name="settings">Settings</string>
+    <string name="score">Score</string>
+    <string name="best">Best</string>
+    <string name="game_over">Game Over</string>
+    <string name="start_new_game_q">Start a new game?</string>
+    <string name="back">Back</string>
+    <string name="start_new_game_warning">Starting a new game will erase your current game</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

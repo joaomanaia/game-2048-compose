@@ -1,14 +1,16 @@
-import com.infinitepower.game2048.buildsrc.ProjectConfig
-import com.infinitepower.game2048.buildsrc.AndroidX
-import com.infinitepower.game2048.buildsrc.Compose
-import com.infinitepower.game2048.buildsrc.Hilt
-import com.infinitepower.game2048.buildsrc.Material
-import com.infinitepower.game2048.buildsrc.Modules
+import com.joaomanaia.game2048.buildsrc.ProjectConfig
+import com.joaomanaia.game2048.buildsrc.AndroidX
+import com.joaomanaia.game2048.buildsrc.Compose
+import com.joaomanaia.game2048.buildsrc.Hilt
+import com.joaomanaia.game2048.buildsrc.Material
+import com.joaomanaia.game2048.buildsrc.DataStore
+import com.joaomanaia.game2048.buildsrc.Kotlinx
 
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("kotlinx-serialization")
     id("dagger.hilt.android.plugin")
 }
 
@@ -43,13 +45,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
-        freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
+        freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeVersion
+        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
     }
     packagingOptions {
         exclude("META-INF/AL2.0")
@@ -64,12 +66,12 @@ dependencies {
     implementation(AndroidX.activityCompose)
 
     implementation(Compose.composeMaterial3)
-
     debugImplementation(Compose.uiTooling)
     debugImplementation(Compose.uiTestManifest)
     implementation(Compose.composeUi)
     implementation(Compose.composeUiToolingPreview)
     implementation(Compose.iconsExtended)
+    implementation(Compose.constraintLayout)
 
     implementation(Hilt.hiltAndroid)
     kapt(Hilt.hiltCompiler)
@@ -78,6 +80,7 @@ dependencies {
 
     implementation(Material.material)
 
-    implementation(project(Modules.core))
-    implementation(project(Modules.homePresentation))
+    implementation(Kotlinx.serialization)
+
+    implementation(DataStore.dataStorePreferences)
 }
