@@ -133,7 +133,7 @@ class GameViewModel @Inject constructor(
         _homeScreenUiState.emit(uiState.copy(moveCount = uiState.moveCount + n))
     }
 
-    private suspend fun changeGridSize(newSize: String) {
-        saveGameRepository.updateGridSize(newSize.toInt())
+    private suspend fun changeGridSize(newSize: Int) {
+        saveGameRepository.updateGridSize(newSize)
     }
 }

@@ -10,6 +10,6 @@ sealed class GameScreenUiEvent {
     ) : GameScreenUiEvent()
 
     data class OnGridSizeChange(
-        val newSize: String
+        val newSize: Int
     ) : GameScreenUiEvent()
 }

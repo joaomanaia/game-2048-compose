@@ -1,10 +1,5 @@
 import com.joaomanaia.game2048.buildsrc.ProjectConfig
-import com.joaomanaia.game2048.buildsrc.AndroidX
-import com.joaomanaia.game2048.buildsrc.Compose
-import com.joaomanaia.game2048.buildsrc.Hilt
-import com.joaomanaia.game2048.buildsrc.Material
-import com.joaomanaia.game2048.buildsrc.DataStore
-import com.joaomanaia.game2048.buildsrc.Kotlinx
+import de.fayard.refreshVersions.core.versionFor
 
 plugins {
     id("com.android.application")
@@ -40,18 +35,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
         freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
     }
     packagingOptions {
         exclude("META-INF/AL2.0")
@@ -60,27 +55,26 @@ android {
 }
 
 dependencies {
-    implementation(AndroidX.coreKtx)
-    implementation(AndroidX.lifecycleRuntimeKtx)
+    implementation(AndroidX.core.ktx)
+    implementation(AndroidX.lifecycle.runtime.ktx)
 
-    implementation(AndroidX.activityCompose)
+    implementation(AndroidX.activity.compose)
 
-    implementation(Compose.composeMaterial3)
-    debugImplementation(Compose.uiTooling)
-    debugImplementation(Compose.uiTestManifest)
-    implementation(Compose.composeUi)
-    implementation(Compose.composeUiToolingPreview)
-    implementation(Compose.iconsExtended)
-    implementation(Compose.constraintLayout)
+    implementation(AndroidX.compose.ui.tooling)
+    implementation(AndroidX.compose.ui.toolingPreview)
+    implementation(AndroidX.activity.compose)
+    implementation(AndroidX.compose.material3)
+    implementation(AndroidX.compose.material.icons.extended)
+    implementation(AndroidX.constraintLayout.compose)
 
-    implementation(Hilt.hiltAndroid)
-    kapt(Hilt.hiltCompiler)
-    kapt(Hilt.androidXHiltCompiler)
-    implementation(Hilt.navigationCompose)
+    implementation(Google.dagger.hilt.android)
+    kapt(Google.dagger.hilt.compiler)
+    kapt(AndroidX.hilt.compiler)
+    implementation(AndroidX.hilt.navigationCompose)
 
-    implementation(Material.material)
+    implementation(Google.android.material)
 
-    implementation(Kotlinx.serialization)
+    implementation(KotlinX.serialization.json)
 
-    implementation(DataStore.dataStorePreferences)
+    implementation(AndroidX.dataStore.preferences)
 }

@@ -81,7 +81,7 @@ private fun HomeScreenContent(
     gridSize: Int,
     onNewGameRequested: () -> Unit,
     onSwipeListener: (direction: Direction) -> Unit,
-    onGridSizeChange: (newSize: String) -> Unit,
+    onGridSizeChange: (newSize: Int) -> Unit,
 ) {
     val (resetDialogVisible, setResetDialogVisible) = remember {
         mutableStateOf(false)
@@ -227,7 +227,7 @@ private fun HomeScreenContent(
                 onDismissListener = { setResetDialogVisible(false) }
             )
             changeGridDialogVisible -> ChangeGameGridDialog(
-                currentSize = gridSize.toString(),
+                currentSize = gridSize,
                 onDismissRequest = { setChangeGridDialogVisible(false) },
                 onGridSizeChange = { newSize ->
                     setChangeGridDialogVisible(false)

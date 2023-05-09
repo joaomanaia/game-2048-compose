@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
@@ -21,20 +20,12 @@ import com.joaomanaia.game2048.R
 
 @Composable
 fun ChangeGameGridDialog(
-    currentSize: String,
+    currentSize: Int,
     onDismissRequest: () -> Unit,
-    onGridSizeChange: (size: String) -> Unit
+    onGridSizeChange: (size: Int) -> Unit
 ) {
-    val gridSizeOptions = mapOf(
-        "3" to R.string.grid_size_3,
-        "4" to R.string.grid_size_4,
-        "5" to R.string.grid_size_5,
-        "6" to R.string.grid_size_6,
-        "7" to R.string.grid_size_7,
-    )
-
     ChangeGameGridDialogImpl(
-        options = gridSizeOptions,
+        sizes = listOf(3, 4, 5, 6, 7),
         currentSize = currentSize,
         onDismissRequest = onDismissRequest,
         onGridSizeChange = onGridSizeChange
@@ -42,12 +33,11 @@ fun ChangeGameGridDialog(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 private fun ChangeGameGridDialogImpl(
-    options: Map<String, Int>,
-    currentSize: String,
+    sizes: List<Int>,
+    currentSize: Int,
     onDismissRequest: () -> Unit,
-    onGridSizeChange: (size: String) -> Unit
+    onGridSizeChange: (size: Int) -> Unit
 ) {
     val (selectedValue, changeSelectedValue) = remember {
         mutableStateOf(currentSize)
@@ -58,11 +48,9 @@ private fun ChangeGameGridDialogImpl(
         title = { Text(text = stringResource(id = R.string.grid_size)) },
         text = {
             LazyColumn(modifier = Modifier.selectableGroup()) {
-                items(options.keys.toList()) { key ->
-                    val isSelected = selectedValue == key
-                    val onSelected = {
-                        changeSelectedValue(key)
-                    }
+                items(items = sizes) { size ->
+                    val isSelected = selectedValue == size
+                    val onSelected = { changeSelectedValue(size) }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -77,13 +65,11 @@ private fun ChangeGameGridDialogImpl(
                             selected = isSelected,
                             onClick = { if (!isSelected) onSelected() },
                         )
-                        options[key]?.let { value ->
-                            Text(
-                                text = stringResource(id = value),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(start = MaterialTheme.spacing.medium)
-                            )
-                        }
+                        Text(
+                            text = stringResource(id = R.string.grid_size_n, size),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = MaterialTheme.spacing.medium)
+                        )
                     }
                 }
             }

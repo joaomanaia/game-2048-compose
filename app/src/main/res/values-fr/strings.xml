@@ -3,11 +3,6 @@
     <string name="app_name">Jeu 2048</string>
     <string name="grid_size">Taille de la grille</string>
     <string name="grid_size_summary">Modifiez la taille de la grille pour augmenter ou diminuer la taille de votre carte.</string>
-    <string name="grid_size_3">3 X 3</string>
-    <string name="grid_size_4">4 X 4</string>
-    <string name="grid_size_5">5 X 5</string>
-    <string name="grid_size_6">6 X 6</string>
-    <string name="grid_size_7">7 X 7</string>
     <string name="reset_game">Réinitialiser le jeu</string>
     <string name="settings">Paramètres</string>
     <string name="score">Score</string>
