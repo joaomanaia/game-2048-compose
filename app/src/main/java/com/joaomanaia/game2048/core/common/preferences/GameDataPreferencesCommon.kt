@@ -18,5 +18,5 @@ object GameDataPreferencesCommon {
 
     object BestScore : PreferenceRequest<Int>(intPreferencesKey("best_score"), 0)
 
-    object GridSize : PreferenceRequest<String>(stringPreferencesKey("grid_size"), "4")
+    object GridSize : PreferenceRequest<Int>(intPreferencesKey("grid_size"), 4)
 }

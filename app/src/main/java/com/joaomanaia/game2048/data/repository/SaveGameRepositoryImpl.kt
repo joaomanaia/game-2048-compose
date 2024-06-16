@@ -9,8 +9,6 @@ import com.joaomanaia.game2048.model.GridTile
 import com.joaomanaia.game2048.model.GridTileMovement
 import com.joaomanaia.game2048.model.Tile
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -49,18 +47,15 @@ class SaveGameRepositoryImpl @Inject constructor(
         gameDataStoreManager.getPreference(GameDataPreferencesCommon.BestScore)
 
     override suspend fun getGridSize(): Int =
-        gameDataStoreManager.getPreference(GameDataPreferencesCommon.GridSize).toIntOrNull() ?: 4
+        gameDataStoreManager.getPreference(GameDataPreferencesCommon.GridSize)
 
     override fun getGridSizeFlow(): Flow<Int> =
         gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.GridSize)
-            .map { sizeStr ->
-                sizeStr.toIntOrNull() ?: 4
-            }
 
     override suspend fun updateGridSize(newSize: Int) {
         gameDataStoreManager.editPreference(
             key = GameDataPreferencesCommon.GridSize.key,
-            newValue = newSize.toString()
+            newValue = newSize
         )
     }
 
