@@ -1,26 +1,25 @@
-import com.joaomanaia.game2048.buildsrc.ProjectConfig
-import de.fayard.refreshVersions.core.versionFor
-
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
-    id("kotlinx-serialization")
-    id("dagger.hilt.android.plugin")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = ProjectConfig.namespace
-    compileSdk = ProjectConfig.compileSdk
+    namespace = "com.joaomanaia.game2048"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = ProjectConfig.applicationId
-        minSdk = ProjectConfig.minSdk
-        targetSdk = ProjectConfig.targetSdk
-        versionCode = ProjectConfig.versionCode
-        versionName = ProjectConfig.versionName
+        applicationId = "com.joaomanaia.game2048"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 2
+        versionName = "1.2.0"
 
-        testInstrumentationRunner = ProjectConfig.testInstrumentationRunner
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -45,36 +44,36 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = versionFor(AndroidX.compose.compiler)
-    }
-    packagingOptions {
-        exclude("META-INF/AL2.0")
-        exclude("META-INF/LGPL2.1")
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
-    implementation(AndroidX.core.ktx)
-    implementation(AndroidX.lifecycle.runtime.ktx)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    implementation(AndroidX.activity.compose)
+    implementation(libs.androidx.datastore.preferences)
 
-    implementation(AndroidX.compose.ui.tooling)
-    implementation(AndroidX.compose.ui.toolingPreview)
-    implementation(AndroidX.activity.compose)
-    implementation(AndroidX.compose.material3)
-    implementation(AndroidX.compose.material.icons.extended)
-    implementation(AndroidX.constraintLayout.compose)
+    implementation(libs.kotlinx.serialization.json)
 
-    implementation(Google.dagger.hilt.android)
-    kapt(Google.dagger.hilt.compiler)
-    kapt(AndroidX.hilt.compiler)
-    implementation(AndroidX.hilt.navigationCompose)
+    implementation(libs.androidx.activity.compose)
 
-    implementation(Google.android.material)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
 
-    implementation(KotlinX.serialization.json)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(AndroidX.dataStore.preferences)
+    implementation(libs.google.material)
+
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigationCompose)
+    ksp(libs.hilt.android.compiler)
 }

@@ -1,7 +1,8 @@
 plugins {
-    id("com.android.application") version "8.1.0-beta02" apply false
-    id("com.android.library") version "8.1.0-beta02" apply false
-    id("org.jetbrains.kotlin.android") apply false
-    id("com.google.dagger.hilt.android") apply false
-    id("org.jetbrains.kotlin.plugin.serialization") apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.hilt) apply false
 }
