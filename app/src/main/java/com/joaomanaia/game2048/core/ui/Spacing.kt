@@ -3,12 +3,14 @@ package com.joaomanaia.game2048.core.ui
 import androidx.annotation.Keep
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Keep
+@Immutable
 data class Spacing(
     /** 8.dp **/
     val default: Dp = 8.dp,
@@ -26,7 +28,7 @@ data class Spacing(
     val extraLarge: Dp = 64.dp,
 )
 
-val LocalSpacing = compositionLocalOf { Spacing() }
+val LocalSpacing = staticCompositionLocalOf { Spacing() }
 
 val MaterialTheme.spacing: Spacing
     @Composable

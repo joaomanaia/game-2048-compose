@@ -37,7 +37,7 @@ fun hasGridChanged(gridTileMovements: List<GridTileMovement>): Boolean {
 
 fun checkIsGameOver(grid: List<List<Tile?>>, gridSize: Int): Boolean {
     // The game is over if no tiles can be moved in any of the 4 directions.
-    return Direction.values().none { hasGridChanged(makeMove(grid, it, gridSize).second) }
+    return Direction.entries.none { hasGridChanged(makeMove(grid, it, gridSize).second) }
 }
 
 private fun <T> List<List<T>>.rotate(
@@ -76,10 +76,10 @@ fun makeMove(
     gridSize: Int
 ): Pair<List<List<Tile?>>, List<GridTileMovement>> {
     val numRotations = when (direction) {
-        is Direction.Left -> 0
-        is Direction.Down -> 1
-        is Direction.Right -> 2
-        is Direction.Up -> 3
+        Direction.LEFT -> 0
+        Direction.DOWN -> 1
+        Direction.RIGHT -> 2
+        Direction.UP -> 3
     }
 
     // Rotate the grid so that we can process it as if the user has swiped their

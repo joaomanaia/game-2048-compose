@@ -162,10 +162,10 @@ private fun HomeScreenContent(
                             val swipeAngle = atan2(dx, -dy)
                             onSwipeListener(
                                 when {
-                                    45 <= swipeAngle && swipeAngle < 135 -> Direction.Up
-                                    135 <= swipeAngle && swipeAngle < 225 -> Direction.Left
-                                    225 <= swipeAngle && swipeAngle < 315 -> Direction.Down
-                                    else -> Direction.Right
+                                    45 <= swipeAngle && swipeAngle < 135 -> Direction.UP
+                                    135 <= swipeAngle && swipeAngle < 225 -> Direction.LEFT
+                                    225 <= swipeAngle && swipeAngle < 315 -> Direction.DOWN
+                                    else -> Direction.RIGHT
                                 }
                             )
                         },

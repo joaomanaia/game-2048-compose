@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  */
 @Keep
 @Serializable
-data class Tile constructor(
+data class Tile(
     val num: Int,
     val id: Int
 ) {
