@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.joaomanaia.game2048.core.ui.CustomColor
+import com.joaomanaia.game2048.core.ui.ExtendedColors
 import com.joaomanaia.game2048.core.ui.LocalExtendedColors
 import com.joaomanaia.game2048.model.GridTileMovement
 import kotlin.math.ln
@@ -106,6 +107,9 @@ private fun GridTileText(
         Animatable(fromOffset, Offset.VectorConverter)
     }
 
+    val extendedColors = LocalExtendedColors.current
+    val colors = remember(num) { extendedColors.getTileColors(num) }
+
     Text(
         text = "$num",
         modifier = Modifier
@@ -117,11 +121,11 @@ private fun GridTileText(
                 translationY = animatedOffset.value.y,
             )
             .background(
-                color = surfaceColorAtElevation(color = getTileColor(num), elevation = 8.dp),
+                color = surfaceColorAtElevation(color = colors.color, elevation = 8.dp),
                 shape = RoundedCornerShape(GRID_TILE_RADIUS),
             )
             .wrapContentSize(),
-        color = getTileTextColor(num = num),
+        color = colors.onColor,
         style = when  {
             gridSize == 3 -> MaterialTheme.typography.headlineMedium
             gridSize == 4 && !isPortrait -> MaterialTheme.typography.titleLarge
@@ -143,48 +147,22 @@ private fun GridTileText(
     }
 }
 
-@Composable
-private fun getTileColor(
-    num: Int
-): Color {
-    val extendedColors = LocalExtendedColors.current
-
-    return when (num) {
-        2 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile2)
-        4 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile4)
-        8 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile8)
-        16 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile16)
-        32 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile32)
-        64 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile64)
-        128 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile128)
-        256 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile256)
-        512 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile512)
-        1024 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile1024)
-        2048 -> extendedColors.getColorAccentByKey(key = CustomColor.Keys.Tile2048)
-        else -> MaterialTheme.colorScheme.surface
+private fun ExtendedColors.getTileColors(num: Int): CustomColor.ColorRoles {
+    val key = when (num) {
+        2 -> CustomColor.Key.Tile2
+        4 -> CustomColor.Key.Tile4
+        8 -> CustomColor.Key.Tile8
+        16 -> CustomColor.Key.Tile16
+        32 -> CustomColor.Key.Tile32
+        64 -> CustomColor.Key.Tile64
+        128 -> CustomColor.Key.Tile128
+        256 -> CustomColor.Key.Tile256
+        512 -> CustomColor.Key.Tile512
+        1024 -> CustomColor.Key.Tile1024
+        else -> CustomColor.Key.Tile2048 // TODO: Add more colors
     }
-}
 
-@Composable
-private fun getTileTextColor(
-    num: Int
-): Color {
-    val extendedColors = LocalExtendedColors.current
-
-    return when (num) {
-        2 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile2)
-        4 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile4)
-        8 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile8)
-        16 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile16)
-        32 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile32)
-        64 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile64)
-        128 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile128)
-        256 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile256)
-        512 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile512)
-        1024 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile1024)
-        2048 -> extendedColors.getColorOnAccentByKey(key = CustomColor.Keys.Tile2048)
-        else -> MaterialTheme.colorScheme.inverseSurface
-    }
+    return getColorsByKey(key = key)
 }
 
 @Composable
