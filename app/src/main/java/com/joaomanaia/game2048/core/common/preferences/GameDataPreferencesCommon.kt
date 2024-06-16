@@ -7,9 +7,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.joaomanaia.game2048.core.manager.PreferenceRequest
-import com.joaomanaia.game2048.di.GAME_DATA_PREFERENCES_NAME
 
-val Context.gameDataDataStore: DataStore<Preferences> by preferencesDataStore(name = GAME_DATA_PREFERENCES_NAME)
+val Context.gameDataDataStore: DataStore<Preferences> by preferencesDataStore(name = "game_data")
 
 object GameDataPreferencesCommon {
     object Grid : PreferenceRequest<String>(stringPreferencesKey("grid"), "[]")
