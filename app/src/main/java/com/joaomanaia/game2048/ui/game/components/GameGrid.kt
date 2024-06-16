@@ -1,12 +1,7 @@
 package com.joaomanaia.game2048.ui.game.components
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,15 +11,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.joaomanaia.game2048.core.ui.CustomColor
-import com.joaomanaia.game2048.core.ui.ExtendedColors
-import com.joaomanaia.game2048.core.ui.LocalExtendedColors
 import com.joaomanaia.game2048.model.GridTileMovement
+import com.joaomanaia.game2048.ui.game.components.grid.GridTileText
 import kotlin.math.ln
 import kotlin.math.min
 
@@ -43,7 +34,7 @@ internal fun GameGrid(
         val tileSizePx = ((min(width, height) - tileMarginPx * (gridSize - 1)) / gridSize).coerceAtLeast(0f)
         val tileSizeDp = Dp(tileSizePx / LocalDensity.current.density)
         val tileOffsetPx = tileSizePx + tileMarginPx
-        val emptyTileColor = surfaceColorAtElevation(color = MaterialTheme.colorScheme.surface, elevation = 8.dp)
+        val emptyTileColor = MaterialTheme.colorScheme.surfaceColorAtElevation(elevation = 8.dp)
         Box(
             modifier = Modifier.drawBehind {
                 // Draw the background empty tiles.
@@ -89,6 +80,7 @@ internal fun GameGrid(
     }
 }
 
+/*
 @Composable
 private fun GridTileText(
     num: Int,
@@ -146,33 +138,7 @@ private fun GridTileText(
         animatedOffset.animateTo(toOffset, tween(durationMillis = 200))
     }
 }
-
-private fun ExtendedColors.getTileColors(num: Int): CustomColor.ColorRoles {
-    val key = when (num) {
-        2 -> CustomColor.Key.Tile2
-        4 -> CustomColor.Key.Tile4
-        8 -> CustomColor.Key.Tile8
-        16 -> CustomColor.Key.Tile16
-        32 -> CustomColor.Key.Tile32
-        64 -> CustomColor.Key.Tile64
-        128 -> CustomColor.Key.Tile128
-        256 -> CustomColor.Key.Tile256
-        512 -> CustomColor.Key.Tile512
-        1024 -> CustomColor.Key.Tile1024
-        else -> CustomColor.Key.Tile2048 // TODO: Add more colors
-    }
-
-    return getColorsByKey(key = key)
-}
-
-@Composable
-private fun surfaceColorAtElevation(color: Color, elevation: Dp): Color {
-    return if (color == MaterialTheme.colorScheme.surface) {
-        MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
-    } else {
-        color
-    }
-}
+*/
 
 /**
  * Returns the [ColorScheme.surface] color with an alpha of the [ColorScheme.primary] color overlaid
