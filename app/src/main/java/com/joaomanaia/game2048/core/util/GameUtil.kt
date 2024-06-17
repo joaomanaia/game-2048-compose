@@ -9,7 +9,7 @@ fun emptyGrid(gridSize: Int) = (0 until gridSize).map {
 }
 
 fun createRandomAddedTile(
-    grid: List<List<Tile?>>
+    grid: Grid
 ): GridTileMovement? {
     val emptyCells = grid.flatMapIndexed { row, tiles ->
         tiles.mapIndexed { col, tile ->
@@ -35,7 +35,7 @@ fun hasGridChanged(gridTileMovements: List<GridTileMovement>): Boolean {
     }
 }
 
-fun checkIsGameOver(grid: List<List<Tile?>>, gridSize: Int): Boolean {
+fun checkIsGameOver(grid: Grid, gridSize: Int): Boolean {
     // The game is over if no tiles can be moved in any of the 4 directions.
     return Direction.entries.none { hasGridChanged(makeMove(grid, it, gridSize).second) }
 }

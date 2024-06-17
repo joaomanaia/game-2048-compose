@@ -2,14 +2,18 @@ package com.joaomanaia.game2048.ui.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.joaomanaia.game2048.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.joaomanaia.game2048.core.common.GameCommon.NUM_INITIAL_TILES
-import com.joaomanaia.game2048.core.util.*
+import com.joaomanaia.game2048.core.util.checkIsGameOver
+import com.joaomanaia.game2048.core.util.createRandomAddedTile
+import com.joaomanaia.game2048.core.util.emptyGrid
+import com.joaomanaia.game2048.core.util.hasGridChanged
+import com.joaomanaia.game2048.core.util.makeMove
+import com.joaomanaia.game2048.core.util.map
 import com.joaomanaia.game2048.domain.repository.SaveGameRepository
+import com.joaomanaia.game2048.model.Direction
 import kotlinx.coroutines.flow.*
 import kotlin.math.max
 
@@ -20,117 +24,124 @@ class GameViewModel @Inject constructor(
     private val _homeScreenUiState = MutableStateFlow(GameScreenUiState())
     val homeScreenUiState = _homeScreenUiState.asStateFlow()
 
-    fun onEvent(event: GameScreenUiEvent) = viewModelScope.launch(Dispatchers.IO) {
-        when (event) {
-            is GameScreenUiEvent.OnStartNewGameRequest -> startNewGame()
-            is GameScreenUiEvent.OnMoveGrid -> move(event.direction)
-            is GameScreenUiEvent.OnGridSizeChange -> changeGridSize(event.newSize)
-        }
-    }
-
-    private val _gridSize = MutableStateFlow(0)
-    val gridSize = _gridSize.asStateFlow()
-
-    private val grid = MutableStateFlow<List<List<Tile?>>>(emptyList())
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            saveGameRepository.getGridSizeFlow().collect { size ->
-                _gridSize.emit(size)
-
-                if (saveGameRepository.checkSaveGameExists()) {
-                    // Restore a previously saved game.
-                    val savedGrid = saveGameRepository.getSavedGrid()
-                    if (savedGrid.first().size == size) {
-                        grid.emit(savedGrid)
-
-                        _homeScreenUiState.emit(
-                            homeScreenUiState.first().copy(
-                                gridTileMovements = saveGameRepository.getSavedGridTileMovements(),
-                                currentScore = saveGameRepository.getSavedCurrentScore(),
-                                bestScore = saveGameRepository.getSavedBestScore(),
-                                isGameOver = checkIsGameOver(savedGrid, size)
-                            )
-                        )
-                    } else {
-                        startNewGame()
-                    }
-                } else {
-                    startNewGame()
-                }
+    fun onEvent(event: GameScreenUiEvent) {
+        viewModelScope.launch {
+            when (event) {
+                is GameScreenUiEvent.OnStartNewGameRequest -> startNewGame()
+                is GameScreenUiEvent.OnMoveGrid -> move(event.direction)
+                is GameScreenUiEvent.OnGridSizeChange -> changeGridSize(event.newSize)
             }
         }
     }
 
-    private suspend fun startNewGame() {
-        val newGridTileMovements = (0 until NUM_INITIAL_TILES).mapNotNull {
-            createRandomAddedTile(emptyGrid(gridSize.first()))
-        }
+    init {
+        saveGameRepository
+            .getGridSizeFlow()
+            .onEach { gridSize ->
+                val savedGrid = saveGameRepository.getSavedGrid()
+                val isGameSaved = savedGrid.isNotEmpty()
 
-        val addedGridTiles = newGridTileMovements.map { it.toGridTile }
+                // Restore a previously saved game if there is one and the grid size matches.
+                if (isGameSaved && savedGrid.first().size == gridSize) {
+                    _homeScreenUiState.update { state ->
+                        state.copy(
+                            gridSize = gridSize,
+                            grid = savedGrid,
+                            gridTileMovements = saveGameRepository.getSavedGridTileMovements(),
+                            currentScore = saveGameRepository.getSavedCurrentScore(),
+                            bestScore = saveGameRepository.getSavedBestScore(),
+                            isGameOver = checkIsGameOver(savedGrid, gridSize),
+                            moveCount = 0
+                        )
+                    }
+                } else {
+                    // If no saved game, start a new game.
+                    startNewGame(gridSize)
+                }
+            }
+            .launchIn(viewModelScope)
 
-        val newGrid = emptyGrid(gridSize.first()).map { row, col, _ ->
-            addedGridTiles.find { row == it.cell.row && col == it.cell.col }?.tile
-        }
-        grid.emit(newGrid)
+        homeScreenUiState
+            .filterNot { state ->
+                state.isGameOver
+                        || state.gridTileMovements.isEmpty()
+                        || state.grid.isEmpty()
+                        || state.currentScore == 0
+                        || state.bestScore == 0
+            }.onEach { state ->
+                saveGameRepository.saveGame(
+                    grid = state.grid,
+                    currentScore = state.currentScore,
+                    bestScore = state.bestScore
+                )
+            }.launchIn(viewModelScope)
+    }
 
-        val uiState = homeScreenUiState.first()
-        _homeScreenUiState.emit(
-            uiState.copy(
+    private fun startNewGame(gridSize: Int? = null) {
+        _homeScreenUiState.update { state ->
+            val emptyGrid = emptyGrid(gridSize ?: state.gridSize)
+
+            val newGridTileMovements = (0 until NUM_INITIAL_TILES).mapNotNull {
+                createRandomAddedTile(emptyGrid)
+            }
+
+            val addedGridTiles = newGridTileMovements.map { it.toGridTile }
+
+            val newGrid = emptyGrid.map { row, col, _ ->
+                addedGridTiles.find { row == it.cell.row && col == it.cell.col }?.tile
+            }
+
+            state.copy(
+                // If the gridSize if provided, use it, otherwise use the current gridSize.
+                gridSize = gridSize ?: state.gridSize,
+                grid = newGrid,
                 gridTileMovements = newGridTileMovements,
                 currentScore = 0,
                 isGameOver = false,
                 moveCount = 0
             )
-        )
-
-        saveGameRepository.saveGame(newGrid, 0, uiState.bestScore)
-    }
-
-    private suspend fun move(direction: Direction) {
-        var (updatedGrid, updatedGridTileMovements) = makeMove(grid.first(), direction, gridSize.first())
-
-        if (!hasGridChanged(updatedGridTileMovements)) return // No tiles were moved.
-
-        // Increment the score
-        val scoreIncrement = updatedGridTileMovements.filter { it.fromGridTile == null }.sumOf { it.toGridTile.tile.num }
-
-        updatedGridTileMovements = updatedGridTileMovements.toMutableList()
-        val addedTileMovement = createRandomAddedTile(updatedGrid)
-        if (addedTileMovement != null) {
-            val (cell, tile) = addedTileMovement.toGridTile
-            updatedGrid = updatedGrid.map { r, c, it -> if (cell.row == r && cell.col == c) tile else it }
-            updatedGridTileMovements.add(addedTileMovement)
         }
-
-        this@GameViewModel.grid.emit(updatedGrid)
-
-        val newGridTileMovements = updatedGridTileMovements.sortedWith { a, _ -> if (a.fromGridTile == null) 1 else -1 }
-
-        val uiState = homeScreenUiState.first()
-        val currentNewScore = uiState.currentScore + scoreIncrement
-        val newBestScore = max(uiState.bestScore, currentNewScore)
-
-        _homeScreenUiState.emit(
-            uiState.copy(
-                gridTileMovements = newGridTileMovements,
-                isGameOver = checkIsGameOver(updatedGrid, gridSize.first()),
-                bestScore = newBestScore,
-                currentScore = currentNewScore
-            )
-        )
-        increaseMoveCount()
-
-        saveGameRepository.saveGame(
-            updatedGrid,
-            currentNewScore,
-            newBestScore
-        )
     }
 
-    private suspend fun increaseMoveCount(n: Int = 1) {
-        val uiState = homeScreenUiState.first()
-        _homeScreenUiState.emit(uiState.copy(moveCount = uiState.moveCount + n))
+    private fun move(direction: Direction) {
+        _homeScreenUiState.update { state ->
+            var (updatedGrid, updatedGridTileMovements) = makeMove(
+                grid = state.grid,
+                direction = direction,
+                gridSize = state.gridSize
+            )
+
+            if (!hasGridChanged(updatedGridTileMovements)) return // No tiles were moved.
+
+            // Increment the score
+            val scoreIncrement = updatedGridTileMovements
+                .filter { it.fromGridTile == null }
+                .sumOf { it.toGridTile.tile.num }
+
+            updatedGridTileMovements = updatedGridTileMovements.toMutableList()
+            val addedTileMovement = createRandomAddedTile(updatedGrid)
+            if (addedTileMovement != null) {
+                val (cell, tile) = addedTileMovement.toGridTile
+                updatedGrid =
+                    updatedGrid.map { r, c, it -> if (cell.row == r && cell.col == c) tile else it }
+                updatedGridTileMovements.add(addedTileMovement)
+            }
+
+            val newGridTileMovements =
+                updatedGridTileMovements.sortedWith { a, _ -> if (a.fromGridTile == null) 1 else -1 }
+
+            val currentNewScore = state.currentScore + scoreIncrement
+            val newBestScore = max(state.bestScore, currentNewScore)
+
+            state.copy(
+                grid = updatedGrid,
+                gridTileMovements = newGridTileMovements,
+                isGameOver = checkIsGameOver(updatedGrid, state.gridSize),
+                bestScore = newBestScore,
+                currentScore = currentNewScore,
+                moveCount = state.moveCount + 1
+            )
+        }
     }
 
     private suspend fun changeGridSize(newSize: Int) {

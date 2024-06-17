@@ -61,13 +61,10 @@ class SaveGameRepositoryImpl @Inject constructor(
 
     override suspend fun saveGame(grid: List<List<Tile?>>, currentScore: Int) {
         val gridStr = Json.encodeToString(grid)
-        gameDataStoreManager.editPreference(
-            key = GameDataPreferencesCommon.Grid.key,
-            newValue = gridStr
-        )
-        gameDataStoreManager.editPreference(
-            key = GameDataPreferencesCommon.CurrentScore.key,
-            newValue = currentScore
+
+        gameDataStoreManager.editPreferences(
+            GameDataPreferencesCommon.Grid.key to gridStr,
+            GameDataPreferencesCommon.CurrentScore.key to currentScore
         )
     }
 
@@ -77,17 +74,11 @@ class SaveGameRepositoryImpl @Inject constructor(
         bestScore: Int
     ) {
         val gridStr = Json.encodeToString(grid)
-        gameDataStoreManager.editPreference(
-            key = GameDataPreferencesCommon.Grid.key,
-            newValue = gridStr
-        )
-        gameDataStoreManager.editPreference(
-            key = GameDataPreferencesCommon.CurrentScore.key,
-            newValue = currentScore
-        )
-        gameDataStoreManager.editPreference(
-            key = GameDataPreferencesCommon.BestScore.key,
-            newValue = bestScore
+
+        gameDataStoreManager.editPreferences(
+            GameDataPreferencesCommon.Grid.key to gridStr,
+            GameDataPreferencesCommon.CurrentScore.key to currentScore,
+            GameDataPreferencesCommon.BestScore.key to bestScore
         )
     }
 }

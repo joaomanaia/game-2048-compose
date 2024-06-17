@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
@@ -46,7 +47,6 @@ fun HomeScreen(
     homeViewModel: GameViewModel = hiltViewModel()
 ) {
     val homeScreenUiState by homeViewModel.homeScreenUiState.collectAsState()
-    val gridSize by homeViewModel.gridSize.collectAsState()
 
     HomeScreenContent(
         gridTileMovements = homeScreenUiState.gridTileMovements,
@@ -63,7 +63,7 @@ fun HomeScreen(
         onGridSizeChange = { newSize ->
             homeViewModel.onEvent(GameScreenUiEvent.OnGridSizeChange(newSize))
         },
-        gridSize = gridSize
+        gridSize = homeScreenUiState.gridSize
     )
 }
 
@@ -93,12 +93,18 @@ private fun HomeScreenContent(
         mutableStateOf(false)
     }
 
-    val currentScoreAnimated by animateIntAsState(targetValue = currentScore)
-    val bestScoreAnimated by animateIntAsState(targetValue = bestScore)
+    val currentScoreAnimated by animateIntAsState(
+        targetValue = currentScore,
+        label = "Current Score"
+    )
+    val bestScoreAnimated by animateIntAsState(
+        targetValue = bestScore,
+        label = "Best Score"
+    )
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = stringResource(id = R.string.app_name))
                 },
@@ -146,8 +152,14 @@ private fun HomeScreenContent(
         val localViewConfiguration = LocalViewConfiguration.current
         var totalDragDistance: Offset = Offset.Zero
 
+        val spaceMedium = MaterialTheme.spacing.medium
+
+        val constraints = remember(isPortrait) {
+            buildConstraints(isPortrait = isPortrait, spaceMedium = spaceMedium)
+        }
+
         ConstraintLayout(
-            constraintSet = buildConstraints(isPortrait),
+            constraintSet = constraints,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -179,23 +191,23 @@ private fun HomeScreenContent(
                 }
         ) {
             TextLabel(
-                text = "$currentScoreAnimated",
-                layoutId = "currentScoreText",
+                text = currentScoreAnimated.toString(),
+                layoutId = LayoutRef.CURRENT_SCORE_TEXT,
                 style = MaterialTheme.typography.headlineMedium
             )
             TextLabel(
                 text = stringResource(id = R.string.score),
-                layoutId = "currentScoreLabel",
+                layoutId = LayoutRef.CURRENT_SCORE_LABEL,
                 style = MaterialTheme.typography.titleMedium
             )
             TextLabel(
-                text = "$bestScoreAnimated",
-                layoutId = "bestScoreText",
+                text = bestScoreAnimated.toString(),
+                layoutId = LayoutRef.BEST_SCORE_TEXT,
                 style = MaterialTheme.typography.headlineMedium
             )
             TextLabel(
                 text = stringResource(id = R.string.best),
-                layoutId = "bestScoreLabel",
+                layoutId = LayoutRef.BEST_SCORE_LABEL,
                 style = MaterialTheme.typography.titleMedium
             )
             GameGrid(
@@ -204,7 +216,7 @@ private fun HomeScreenContent(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(MaterialTheme.spacing.medium)
-                    .layoutId("gameGrid"),
+                    .layoutId(LayoutRef.GAME_GRID),
                 gridSize = gridSize,
                 isPortrait = isPortrait
             )
@@ -261,17 +273,16 @@ private fun atan2(x: Float, y: Float): Float {
     return degrees
 }
 
-@Composable
-@ReadOnlyComposable
-private fun buildConstraints(isPortrait: Boolean): ConstraintSet {
-    val spaceMedium = MaterialTheme.spacing.medium
-
+private fun buildConstraints(
+    isPortrait: Boolean,
+    spaceMedium: Dp
+): ConstraintSet {
     return ConstraintSet {
-        val gameGrid = createRefFor("gameGrid")
-        val currentScoreText = createRefFor("currentScoreText")
-        val currentScoreLabel = createRefFor("currentScoreLabel")
-        val bestScoreText = createRefFor("bestScoreText")
-        val bestScoreLabel = createRefFor("bestScoreLabel")
+        val gameGrid = createRefFor(LayoutRef.GAME_GRID)
+        val currentScoreText = createRefFor(LayoutRef.CURRENT_SCORE_TEXT)
+        val currentScoreLabel = createRefFor(LayoutRef.CURRENT_SCORE_LABEL)
+        val bestScoreText = createRefFor(LayoutRef.BEST_SCORE_TEXT)
+        val bestScoreLabel = createRefFor(LayoutRef.BEST_SCORE_LABEL)
 
         if (isPortrait) {
             constrain(gameGrid) {
@@ -320,6 +331,14 @@ private fun buildConstraints(isPortrait: Boolean): ConstraintSet {
             createHorizontalChain(gameGrid, bestScoreLabel, chainStyle = ChainStyle.Packed)
         }
     }
+}
+
+private object LayoutRef {
+    const val GAME_GRID = "gameGrid"
+    const val CURRENT_SCORE_TEXT = "currentScoreText"
+    const val CURRENT_SCORE_LABEL = "currentScoreLabel"
+    const val BEST_SCORE_TEXT = "bestScoreText"
+    const val BEST_SCORE_LABEL = "bestScoreLabel"
 }
 
 @Composable

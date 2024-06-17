@@ -26,6 +26,14 @@ class DataStoreManagerImpl(
         dataStore.edit { preferences -> preferences[key] = newValue }
     }
 
+    override suspend fun editPreferences(vararg prefs: Preferences.Pair<*>) {
+        dataStore.edit { preferences ->
+            prefs.forEach {
+                preferences.plusAssign(it)
+            }
+        }
+    }
+
     override suspend fun clearPreferences() {
         dataStore.edit { preferences -> preferences.clear() }
     }

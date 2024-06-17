@@ -76,4 +76,10 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigationCompose)
     ksp(libs.hilt.android.compiler)
+
+    testImplementation(kotlin("test"))
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

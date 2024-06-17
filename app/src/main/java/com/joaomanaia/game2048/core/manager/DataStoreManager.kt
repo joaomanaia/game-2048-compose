@@ -12,5 +12,7 @@ interface DataStoreManager {
 
     suspend fun <T> editPreference(key: Preferences.Key<T>, newValue: T)
 
+    suspend fun editPreferences(vararg prefs: Preferences.Pair<*>)
+
     suspend fun clearPreferences()
 }
