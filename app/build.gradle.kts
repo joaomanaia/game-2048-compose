@@ -78,6 +78,8 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.assertk)
 }
 
 tasks.withType<Test> {

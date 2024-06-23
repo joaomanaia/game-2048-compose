@@ -35,6 +35,7 @@ internal fun GameGrid(
         val tileSizeDp = Dp(tileSizePx / LocalDensity.current.density)
         val tileOffsetPx = tileSizePx + tileMarginPx
         val emptyTileColor = MaterialTheme.colorScheme.surfaceColorAtElevation(elevation = 8.dp)
+
         Box(
             modifier = Modifier.drawBehind {
                 // Draw the background empty tiles.
@@ -65,14 +66,14 @@ internal fun GameGrid(
                 // the key() function.
                 key(toGridTile.tile.id) {
                     GridTileText(
-                        num = toGridTile.tile.num,
+                        tile = toGridTile.tile,
                         size = tileSizeDp,
                         fromScale = fromScale,
                         fromOffset = fromOffset,
                         toOffset = toOffset,
                         moveCount = moveCount,
                         gridSize = gridSize,
-                        isPortrait = isPortrait
+                        isPortrait = isPortrait,
                     )
                 }
             }

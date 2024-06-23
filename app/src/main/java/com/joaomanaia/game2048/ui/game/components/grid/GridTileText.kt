@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -23,11 +22,42 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.joaomanaia.game2048.core.ui.CustomColor
-import com.joaomanaia.game2048.core.ui.ExtendedColors
 import com.joaomanaia.game2048.core.ui.Game2048Theme
-import com.joaomanaia.game2048.core.ui.LocalExtendedColors
+import com.joaomanaia.game2048.core.ui.TileColorsGenerator
+import com.joaomanaia.game2048.model.Tile
 import kotlinx.coroutines.launch
+
+@Composable
+internal fun GridTileText(
+    modifier: Modifier = Modifier,
+    tile: Tile,
+    tileBaseColor: Color = MaterialTheme.colorScheme.primary,
+    size: Dp,
+    fromScale: Float,
+    fromOffset: Offset,
+    toOffset: Offset,
+    moveCount: Int,
+    gridSize: Int,
+    isPortrait: Boolean,
+) {
+    val containerColor = remember(tile, tileBaseColor) {
+        TileColorsGenerator.getColorForTile(tile, tileBaseColor)
+    }
+
+    GridTileText(
+        modifier = modifier,
+        num = tile.num,
+        size = size,
+        fromScale = fromScale,
+        fromOffset = fromOffset,
+        toOffset = toOffset,
+        moveCount = moveCount,
+        gridSize = gridSize,
+        isPortrait = isPortrait,
+        containerColor = containerColor,
+        contentColor = Color.White,
+    )
+}
 
 @Composable
 internal fun GridTileText(
@@ -39,7 +69,9 @@ internal fun GridTileText(
     toOffset: Offset,
     moveCount: Int,
     gridSize: Int,
-    isPortrait: Boolean
+    isPortrait: Boolean,
+    containerColor: Color,
+    contentColor: Color
 ) {
     val animatedScale = remember { Animatable(fromScale) }
     val animatedOffset = remember { Animatable(fromOffset, Offset.VectorConverter) }
@@ -54,10 +86,7 @@ internal fun GridTileText(
         }
     }
 
-    val extendedColors = LocalExtendedColors.current
-    val colors = remember(num) { extendedColors.getTileColors(num) }
-
-    val textStyle = when  {
+    val textStyle = when {
         gridSize == 3 -> MaterialTheme.typography.headlineMedium
         gridSize == 4 && !isPortrait -> MaterialTheme.typography.titleLarge
         gridSize == 5 && isPortrait -> MaterialTheme.typography.titleLarge
@@ -80,41 +109,14 @@ internal fun GridTileText(
                 translationY = animatedOffset.value.y,
             )
             .background(
-                color = surfaceColorAtElevation(color = colors.color, elevation = 8.dp),
+                color = containerColor,
                 shape = RoundedCornerShape(GRID_TILE_RADIUS),
             )
             .wrapContentSize(),
-        color = colors.onColor,
+        color = contentColor,
         style = textStyle,
         textAlign = TextAlign.Center
     )
-}
-
-private fun ExtendedColors.getTileColors(num: Int): CustomColor.ColorRoles {
-    val key = when (num) {
-        2 -> CustomColor.Key.Tile2
-        4 -> CustomColor.Key.Tile4
-        8 -> CustomColor.Key.Tile8
-        16 -> CustomColor.Key.Tile16
-        32 -> CustomColor.Key.Tile32
-        64 -> CustomColor.Key.Tile64
-        128 -> CustomColor.Key.Tile128
-        256 -> CustomColor.Key.Tile256
-        512 -> CustomColor.Key.Tile512
-        1024 -> CustomColor.Key.Tile1024
-        else -> CustomColor.Key.Tile2048 // TODO: Add more colors
-    }
-
-    return getColorsByKey(key = key)
-}
-
-@Composable
-private fun surfaceColorAtElevation(color: Color, elevation: Dp): Color {
-    return if (color == MaterialTheme.colorScheme.surface) {
-        MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)
-    } else {
-        color
-    }
 }
 
 private val GRID_TILE_RADIUS = 4.dp
@@ -126,14 +128,14 @@ private fun GridTitleTextPreview() {
         Surface {
             GridTileText(
                 modifier = Modifier.padding(16.dp),
-                num = 2,
+                tile = Tile(2),
                 size = 100.dp,
                 fromScale = 0f,
                 fromOffset = Offset(0f, 0f),
                 toOffset = Offset(0f, 0f),
                 moveCount = 0,
                 gridSize = 4,
-                isPortrait = true
+                isPortrait = true,
             )
         }
     }

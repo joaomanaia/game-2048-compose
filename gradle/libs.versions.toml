@@ -4,6 +4,7 @@ androidGradlePlugin = "8.5.0"
 androidxCoreKtx = "1.13.1"
 androidxDataStore = "1.1.1"
 activityCompose = "1.9.0"
+assertk = "0.28.1"
 composeBom = "2024.06.00"
 constraintlayoutCompose = "1.0.1"
 lifecycleRuntimeKtx = "2.6.1"
@@ -13,6 +14,7 @@ ksp = "2.0.0-1.0.21"
 googleMaterial = "1.12.0"
 hilt = "2.51.1"
 hiltAndroidx = "1.2.0"
+junitJupiter = "5.10.2"
 
 [libraries]
 
@@ -29,11 +31,13 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref="assertk" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltAndroidx" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref="junitJupiter" }
 
 [plugins]
 
