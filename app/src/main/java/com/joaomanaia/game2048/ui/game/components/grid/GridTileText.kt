@@ -86,6 +86,32 @@ internal fun GridTileText(
         }
     }
 
+    GridTileText(
+        modifier = modifier.graphicsLayer(
+            scaleX = animatedScale.value,
+            scaleY = animatedScale.value,
+            translationX = animatedOffset.value.x,
+            translationY = animatedOffset.value.y,
+        ),
+        num = num,
+        size = size,
+        gridSize = gridSize,
+        isPortrait = isPortrait,
+        containerColor = containerColor,
+        contentColor = contentColor,
+    )
+}
+
+@Composable
+internal fun GridTileText(
+    modifier: Modifier = Modifier,
+    num: Int,
+    size: Dp,
+    gridSize: Int,
+    isPortrait: Boolean,
+    containerColor: Color,
+    contentColor: Color
+) {
     val textStyle = when {
         gridSize == 3 -> MaterialTheme.typography.headlineMedium
         gridSize == 4 && !isPortrait -> MaterialTheme.typography.titleLarge
@@ -102,12 +128,6 @@ internal fun GridTileText(
         text = num.toString(),
         modifier = modifier
             .size(size)
-            .graphicsLayer(
-                scaleX = animatedScale.value,
-                scaleY = animatedScale.value,
-                translationX = animatedOffset.value.x,
-                translationY = animatedOffset.value.y,
-            )
             .background(
                 color = containerColor,
                 shape = RoundedCornerShape(GRID_TILE_RADIUS),

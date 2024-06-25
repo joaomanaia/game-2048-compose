@@ -5,7 +5,7 @@ import com.joaomanaia.game2048.model.Tile
 import com.joaomanaia.game2048.model.toHsl
 
 object TileColorsGenerator {
-    private const val HUE_INCREMENT = 15f
+    const val HUE_INCREMENT = 15f
 
     private const val SATURATION = 0.5f
     private const val LIGHTNESS = 0.5f

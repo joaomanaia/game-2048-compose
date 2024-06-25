@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,12 +21,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.joaomanaia.game2048.core.common.GameCommon.NUM_INITIAL_TILES
 import com.joaomanaia.game2048.core.ui.Game2048Theme
 import com.joaomanaia.game2048.core.ui.components.GameDialog
@@ -36,32 +40,40 @@ import com.joaomanaia.game2048.model.Direction
 import com.joaomanaia.game2048.model.GridTileMovement
 import kotlin.math.sqrt
 import com.joaomanaia.game2048.R
+import com.joaomanaia.game2048.core.navigation.Screen
+import com.joaomanaia.game2048.ui.color_settings.ColorSettingsScreenDestination
 import com.joaomanaia.game2048.ui.game.components.ChangeGameGridDialog
 import com.joaomanaia.game2048.ui.game.components.icons.Grid4x4
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal object GameScreenDestination : Screen
 
 /**
  * 2040 game home screen
  */
 @Composable
-fun HomeScreen(
-    homeViewModel: GameViewModel = hiltViewModel()
+internal fun GameScreen(
+    navController: NavController,
+    gameViewModel: GameViewModel = hiltViewModel()
 ) {
-    val homeScreenUiState by homeViewModel.homeScreenUiState.collectAsState()
+    val homeScreenUiState by gameViewModel.homeScreenUiState.collectAsState()
 
     HomeScreenContent(
+        navController = navController,
         gridTileMovements = homeScreenUiState.gridTileMovements,
         onSwipeListener = { direction ->
-            homeViewModel.onEvent(GameScreenUiEvent.OnMoveGrid(direction))
+            gameViewModel.onEvent(GameScreenUiEvent.OnMoveGrid(direction))
         },
         currentScore = homeScreenUiState.currentScore,
         bestScore = homeScreenUiState.bestScore,
         moveCount = homeScreenUiState.moveCount,
         isGameOver = homeScreenUiState.isGameOver,
         onNewGameRequested = {
-            homeViewModel.onEvent(GameScreenUiEvent.OnStartNewGameRequest)
+            gameViewModel.onEvent(GameScreenUiEvent.OnStartNewGameRequest)
         },
         onGridSizeChange = { newSize ->
-            homeViewModel.onEvent(GameScreenUiEvent.OnGridSizeChange(newSize))
+            gameViewModel.onEvent(GameScreenUiEvent.OnGridSizeChange(newSize))
         },
         gridSize = homeScreenUiState.gridSize
     )
@@ -73,6 +85,7 @@ fun HomeScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun HomeScreenContent(
+    navController: NavController,
     gridTileMovements: List<GridTileMovement>,
     currentScore: Int,
     bestScore: Int,
@@ -127,9 +140,7 @@ private fun HomeScreenContent(
                         onDismissRequest = { setOptionsVisible(false) }
                     ) {
                         DropdownMenuItem(
-                            text = {
-                                Text(text = stringResource(id = R.string.grid_size))
-                            },
+                            text = { Text(text = stringResource(id = R.string.grid_size)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Rounded.Grid4x4,
@@ -139,6 +150,20 @@ private fun HomeScreenContent(
                             onClick = {
                                 setOptionsVisible(false)
                                 setChangeGridDialogVisible(true)
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text(text = "Color Settings") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Palette,
+                                    contentDescription = "Color Settings"
+                                )
+                            },
+                            onClick = {
+                                navController.navigate(ColorSettingsScreenDestination)
+                                setOptionsVisible(false)
                             }
                         )
                     }
@@ -342,7 +367,7 @@ private object LayoutRef {
 }
 
 @Composable
-@Preview(showBackground = true)
+@PreviewLightDark
 private fun HomeScreenContentPrev() {
     val newGridTileMovements = (0 until NUM_INITIAL_TILES).mapNotNull {
         createRandomAddedTile(emptyGrid(4))
@@ -350,6 +375,7 @@ private fun HomeScreenContentPrev() {
 
     Game2048Theme {
         HomeScreenContent(
+            navController = rememberNavController(),
             gridTileMovements = newGridTileMovements,
             currentScore = 0,
             bestScore = 0,
