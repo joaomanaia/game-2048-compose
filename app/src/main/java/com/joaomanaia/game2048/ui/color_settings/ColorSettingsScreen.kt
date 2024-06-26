@@ -3,26 +3,32 @@ package com.joaomanaia.game2048.ui.color_settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Contrast
+import androidx.compose.material.icons.rounded.HPlusMobiledata
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,12 +37,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -51,7 +56,7 @@ import com.joaomanaia.game2048.core.ui.spacing
 import com.joaomanaia.game2048.ui.color_settings.components.BaseColorChooser
 import com.joaomanaia.game2048.ui.color_settings.components.DarkThemeDialogPicker
 import com.joaomanaia.game2048.ui.components.BackIconButton
-import com.joaomanaia.game2048.ui.game.components.GameGridBackground
+import com.joaomanaia.game2048.ui.game.components.GRID_ITEM_GAP
 import com.joaomanaia.game2048.ui.game.components.grid.GridTileText
 import kotlinx.serialization.Serializable
 import kotlin.math.pow
@@ -84,8 +89,6 @@ private fun ColorSettingsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    var darkThemeDialogVisible by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             LargeTopAppBar(
@@ -101,7 +104,6 @@ private fun ColorSettingsScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .padding(MaterialTheme.spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
         ) {
             item {
                 BaseColorChooser(
@@ -110,77 +112,173 @@ private fun ColorSettingsScreen(
             }
 
             item {
-                val isInDarkTheme = uiState.darkThemeConfig.shouldUseDarkTheme()
-
-                val darkThemeText = if (isInDarkTheme) {
-                    "Enabled"
-                } else {
-                    "Disabled"
-                }
-
-                ListItem(
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.large)
-                        .clickable(
-                            onClick = { darkThemeDialogVisible = true },
-                            role = Role.Button
-                        ),
-                    headlineContent = { Text(text = "Night Mode") },
-                    supportingContent = { Text(text = darkThemeText) },
-                    trailingContent = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-                        ) {
-                            VerticalDivider(modifier = Modifier.height(32.dp))
-                            Switch(
-                                checked = isInDarkTheme,
-                                onCheckedChange = {
-                                    val config = if (it) DarkThemeConfig.DARK else DarkThemeConfig.LIGHT
-
-                                    onEvent(ColorSettingsUiEvent.OnDarkThemeChanged(config))
-                                }
-                            )
-                        }
-                    },
-                )
-            }
-
-            item {
-                ListItem(
-                    headlineContent = { Text(text = "Hue Increment") },
-                    supportingContent = {
-                        Slider(
-                            modifier = Modifier.fillMaxWidth(),
-                            valueRange = 5f..20f,
-                            steps = 10,
-                            value = uiState.hueIncrement,
-                            onValueChange = {}
-                        )
-                    },
-                    trailingContent = {
-                        Text(
-                            text = uiState.hueIncrement.roundToInt().toString(),
-                            modifier = Modifier.width(48.dp),
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
+                NightModeSwitch(
+                    modifier = Modifier.padding(vertical = MaterialTheme.spacing.small),
+                    darkThemeConfig = uiState.darkThemeConfig,
+                    onEvent = onEvent
                 )
             }
 
             item {
                 PreviewGrid(
                     baseColor = MaterialTheme.colorScheme.primary,
-                    hueIncrement = uiState.hueIncrement
+                    hueParams = uiState.hueParams
+                )
+            }
+
+            settingsGroupItem(title = "Tile Hue")
+
+            item {
+                SettingsItemSlider(
+                    modifier = Modifier.padding(top = MaterialTheme.spacing.small),
+                    title = "Increment Value",
+                    valueRange = HUE_INCREMENT_RANGE,
+                    steps = HUE_INCREMENT_STEP,
+                    value = uiState.hueParams.hueIncrement,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.HPlusMobiledata,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChange = { onEvent(ColorSettingsUiEvent.OnHueIncrementChanged(it)) },
+                    formatTrailingText = { it.toInt().toString() }
+                )
+            }
+
+            item {
+                SettingsItemSlider(
+                    title = "Saturation",
+                    valueRange = HUE_SAT_LIGHT_RANGE,
+                    steps = HUE_SAT_LIGHT_STEP,
+                    value = uiState.hueParams.saturation,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Contrast,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChange = { onEvent(ColorSettingsUiEvent.OnHueSaturationChanged(it)) },
+                )
+            }
+
+            item {
+                SettingsItemSlider(
+                    title = "Lightness",
+                    valueRange = HUE_SAT_LIGHT_RANGE,
+                    steps = HUE_SAT_LIGHT_STEP,
+                    value = uiState.hueParams.lightness,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.LightMode,
+                            contentDescription = null
+                        )
+                    },
+                    onValueChange = { onEvent(ColorSettingsUiEvent.OnHueLightnessChanged(it)) },
                 )
             }
         }
     }
+}
+
+private fun LazyListScope.settingsGroupItem(
+    modifier: Modifier = Modifier,
+    title: String,
+) {
+    item {
+        val spaceMedium = MaterialTheme.spacing.medium
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = modifier
+                .padding(start = spaceMedium, top = spaceMedium),
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun SettingsItemSlider(
+    modifier: Modifier = Modifier,
+    title: String,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    value: Float,
+    icon: @Composable (() -> Unit)? = null,
+    onValueChange: (Float) -> Unit,
+    formatTrailingText: (Float) -> String = { "%.1f".format(it) }
+) {
+    ListItem(
+        modifier = modifier,
+        headlineContent = { Text(text = title) },
+        supportingContent = {
+            Slider(
+                modifier = Modifier.fillMaxWidth(),
+                valueRange = valueRange,
+                steps = steps,
+                value = value,
+                onValueChange = onValueChange
+            )
+        },
+        trailingContent = {
+            Text(
+                text = formatTrailingText(value),
+                modifier = Modifier.width(48.dp),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleMedium
+            )
+        },
+        leadingContent = icon
+    )
+}
+
+@Composable
+private fun NightModeSwitch(
+    modifier: Modifier = Modifier,
+    darkThemeConfig: DarkThemeConfig,
+    onEvent: (ColorSettingsUiEvent) -> Unit
+) {
+    val isInDarkTheme = darkThemeConfig.shouldUseDarkTheme()
+
+    var darkThemeDialogVisible by remember { mutableStateOf(false) }
+
+    val darkThemeText = if (isInDarkTheme) {
+        "Enabled"
+    } else {
+        "Disabled"
+    }
+
+    ListItem(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickable(
+                onClick = { darkThemeDialogVisible = true },
+                role = Role.Button
+            ),
+        headlineContent = { Text(text = "Night Mode") },
+        supportingContent = { Text(text = darkThemeText) },
+        trailingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
+            ) {
+                VerticalDivider(modifier = Modifier.height(32.dp))
+                Switch(
+                    checked = isInDarkTheme,
+                    onCheckedChange = {
+                        val config = if (it) DarkThemeConfig.DARK else DarkThemeConfig.LIGHT
+
+                        onEvent(ColorSettingsUiEvent.OnDarkThemeChanged(config))
+                    }
+                )
+            }
+        },
+    )
 
     if (darkThemeDialogVisible) {
         DarkThemeDialogPicker(
-            darkThemeConfig = uiState.darkThemeConfig,
+            darkThemeConfig = darkThemeConfig,
             onDarkThemeChanged = { onEvent(ColorSettingsUiEvent.OnDarkThemeChanged(it)) },
             onDismissRequest = { darkThemeDialogVisible = false }
         )
@@ -191,58 +289,75 @@ private fun ColorSettingsScreen(
 private fun PreviewGrid(
     modifier: Modifier = Modifier,
     baseColor: Color,
-    hueIncrement: Float
+    hueParams: TileColorsGenerator.HueParams
 ) {
-    val colors = remember(baseColor, hueIncrement) {
-        TileColorsGenerator
-            .generateHueSequence(
-                baseColor = baseColor,
-                hueIncrement = hueIncrement
-            ).take(COLORS_TO_GENERATE)
-    }
-
-    GameGridBackground(
-        modifier = modifier,
-        gridSize = GRID_SIZE
-    ) { tileSize ->
-        val tileSizePx = with(LocalDensity.current) {
-            tileSize.toPx()
+    BoxWithConstraints(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(MaterialTheme.spacing.medium)
+            .clip(MaterialTheme.shapes.large),
+    ) {
+        val tileWidth = remember(maxWidth) {
+            (maxWidth - GRID_ITEM_GAP * (GRID_SIZE - 1)) / GRID_SIZE
         }
 
-        val tileMarginPx = with(LocalDensity.current) { 4.dp.toPx() }
-        val tileOffsetPx = tileSizePx + tileMarginPx
+        val textFontSize = with(LocalDensity.current) {
+            (tileWidth * 0.3f).toSp()
+        }
 
-        colors.forEachIndexed { index, color ->
-            // Calculates the tile number based in the index 2^n.
-            val num = remember(index) {
-                2f.pow(index + 1).roundToInt()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(GRID_ITEM_GAP)
+        ) {
+            for (row in 0 until GRID_SIZE) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(GRID_ITEM_GAP)
+                ) {
+                    for (col in 0 until GRID_SIZE) {
+                        val logNum = remember(row, col) {
+                            row * GRID_SIZE + col + 1
+                        }
+
+                        val num = remember(logNum) {
+                            2.0.pow(logNum).roundToInt()
+                        }
+
+                        val containerColor = remember(logNum, baseColor, hueParams) {
+                            TileColorsGenerator.getColorForTile(
+                                logNum = logNum,
+                                baseColor = baseColor,
+                                hueParams = hueParams
+                            )
+                        }
+
+                        GridTileText(
+                            modifier = Modifier.size(tileWidth),
+                            num = num,
+                            textStyle = TextStyle(fontSize = textFontSize),
+                            containerColor = containerColor,
+                            contentColor = Color.White
+                        )
+                    }
+                }
             }
-
-            val offset = remember(index) {
-                Offset(
-                    x = (index % GRID_SIZE) * tileOffsetPx,
-                    y = (index / GRID_SIZE) * tileOffsetPx
-                )
-            }
-
-            GridTileText(
-                modifier = Modifier.graphicsLayer(
-                    translationX = offset.x,
-                    translationY = offset.y
-                ),
-                num = num,
-                size = tileSize,
-                gridSize = GRID_SIZE,
-                isPortrait = true,
-                containerColor = color,
-                contentColor = Color.White
-            )
         }
     }
 }
 
 private const val GRID_SIZE = 4
-private const val COLORS_TO_GENERATE = GRID_SIZE * GRID_SIZE
+
+// Hue increment slider settings
+private const val MIN_HUE_INCREMENT = 5f
+private const val MAX_HUE_INCREMENT = 20f
+private val HUE_INCREMENT_RANGE = MIN_HUE_INCREMENT..MAX_HUE_INCREMENT
+private const val HUE_INCREMENT_STEP = (MAX_HUE_INCREMENT - MIN_HUE_INCREMENT).toInt() - 1
+
+// Hue saturation and lightness slider settings
+private const val MIN_HUE_SAT_LIGHT = 0.2f
+private const val MAX_HUE_SAT_LIGHT = 0.8f
+private val HUE_SAT_LIGHT_RANGE = MIN_HUE_SAT_LIGHT..MAX_HUE_SAT_LIGHT
+private const val HUE_SAT_LIGHT_STEP = ((MAX_HUE_SAT_LIGHT - MIN_HUE_SAT_LIGHT) * 10).toInt() - 1
 
 @Composable
 @PreviewLightDark
@@ -250,9 +365,7 @@ private const val COLORS_TO_GENERATE = GRID_SIZE * GRID_SIZE
 private fun ColorSettingsScreenPreview() {
     Game2048Theme {
         ColorSettingsScreen(
-            uiState = ColorSettingsUiState(
-                hueIncrement = 15f
-            )
+            uiState = ColorSettingsUiState()
         )
     }
 }

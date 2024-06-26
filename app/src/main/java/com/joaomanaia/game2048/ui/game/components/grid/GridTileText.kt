@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,9 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
@@ -45,9 +50,8 @@ internal fun GridTileText(
     }
 
     GridTileText(
-        modifier = modifier,
+        modifier = modifier.size(size),
         num = tile.num,
-        size = size,
         fromScale = fromScale,
         fromOffset = fromOffset,
         toOffset = toOffset,
@@ -63,7 +67,6 @@ internal fun GridTileText(
 internal fun GridTileText(
     modifier: Modifier = Modifier,
     num: Int,
-    size: Dp,
     fromScale: Float,
     fromOffset: Offset,
     toOffset: Offset,
@@ -94,7 +97,6 @@ internal fun GridTileText(
             translationY = animatedOffset.value.y,
         ),
         num = num,
-        size = size,
         gridSize = gridSize,
         isPortrait = isPortrait,
         containerColor = containerColor,
@@ -106,7 +108,6 @@ internal fun GridTileText(
 internal fun GridTileText(
     modifier: Modifier = Modifier,
     num: Int,
-    size: Dp,
     gridSize: Int,
     isPortrait: Boolean,
     containerColor: Color,
@@ -127,15 +128,45 @@ internal fun GridTileText(
     Text(
         text = num.toString(),
         modifier = modifier
-            .size(size)
-            .background(
-                color = containerColor,
-                shape = RoundedCornerShape(GRID_TILE_RADIUS),
-            )
+            .drawBehind {
+                val radius = GRID_TILE_RADIUS.toPx()
+
+                drawRoundRect(
+                    color = containerColor,
+                    cornerRadius = CornerRadius(radius, radius)
+                )
+            }
             .wrapContentSize(),
         color = contentColor,
         style = textStyle,
         textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+internal fun GridTileText(
+    modifier: Modifier = Modifier,
+    num: Int,
+    textStyle: TextStyle,
+    containerColor: Color,
+    contentColor: Color
+) {
+    Text(
+        text = num.toString(),
+        modifier = modifier
+            .drawBehind {
+                val radius = GRID_TILE_RADIUS.toPx()
+
+                drawRoundRect(
+                    color = containerColor,
+                    cornerRadius = CornerRadius(radius, radius)
+                )
+            }
+            .wrapContentSize(),
+        color = contentColor,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        style = textStyle
     )
 }
 

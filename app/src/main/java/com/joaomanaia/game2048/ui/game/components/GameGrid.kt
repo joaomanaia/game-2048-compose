@@ -10,15 +10,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.joaomanaia.game2048.model.GridTileMovement
-import com.joaomanaia.game2048.model.Tile
 import com.joaomanaia.game2048.ui.game.components.grid.GridTileText
-import kotlin.math.ln
 import kotlin.math.min
 
 @Composable
@@ -32,7 +28,7 @@ internal fun GameGrid(
     BoxWithConstraints(modifier) {
         val width = with(LocalDensity.current) { maxWidth.toPx() }
         val height = with(LocalDensity.current) { maxHeight.toPx() }
-        val tileMarginPx = with(LocalDensity.current) { 4.dp.toPx() }
+        val tileMarginPx = with(LocalDensity.current) { GRID_ITEM_GAP.toPx() }
         val tileSizePx = ((min(width, height) - tileMarginPx * (gridSize - 1)) / gridSize).coerceAtLeast(0f)
         val tileSizeDp = Dp(tileSizePx / LocalDensity.current.density)
         val tileOffsetPx = tileSizePx + tileMarginPx
@@ -119,3 +115,4 @@ internal fun GameGridBackground(
 }
 
 private val GRID_TILE_RADIUS = 4.dp
+val GRID_ITEM_GAP = 4.dp
