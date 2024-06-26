@@ -42,10 +42,15 @@ internal fun GridTileText(
     fromOffset: Offset,
     toOffset: Offset,
     moveCount: Int,
-    textStyle: TextStyle
+    textStyle: TextStyle,
+    hueParams: TileColorsGenerator.HueParams = TileColorsGenerator.HueParams()
 ) {
-    val containerColor = remember(tile, tileBaseColor) {
-        TileColorsGenerator.getColorForTile(tile, tileBaseColor)
+    val containerColor = remember(tile, tileBaseColor, hueParams) {
+        TileColorsGenerator.getColorForTile(
+            tile = tile,
+            baseColor = tileBaseColor,
+            hueParams = hueParams
+        )
     }
 
     GridTileText(

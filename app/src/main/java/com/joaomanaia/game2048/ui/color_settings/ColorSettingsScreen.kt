@@ -3,9 +3,8 @@ package com.joaomanaia.game2048.ui.color_settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -104,8 +102,8 @@ private fun ColorSettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-                .padding(MaterialTheme.spacing.medium),
+                .fillMaxSize(),
+            contentPadding = PaddingValues(MaterialTheme.spacing.medium)
         ) {
             item {
                 BaseColorChooser(
@@ -131,8 +129,15 @@ private fun ColorSettingsScreen(
             settingsGroupItem(title = "Tile Hue")
 
             item {
-                SettingsItemSlider(
+                ReverseHueSwitch(
                     modifier = Modifier.padding(top = MaterialTheme.spacing.small),
+                    isIncrement = uiState.hueParams.isIncrement,
+                    onChange = { onEvent(ColorSettingsUiEvent.OnIncrementHueChanged(it)) }
+                )
+            }
+
+            item {
+                SettingsItemSlider(
                     title = "Increment Value",
                     valueRange = HUE_INCREMENT_RANGE,
                     steps = HUE_INCREMENT_STEP,
@@ -198,6 +203,38 @@ private fun LazyListScope.settingsGroupItem(
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Composable
+private fun ReverseHueSwitch(
+    modifier: Modifier = Modifier,
+    isIncrement: Boolean,
+    onChange: (Boolean) -> Unit
+) {
+    ListItem(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickable(
+                onClick = { onChange(!isIncrement) },
+                role = Role.Button
+            ),
+        headlineContent = { Text(text = "Reverse Hue") },
+        supportingContent = {
+            val text = if (isIncrement) {
+                "The hue value will be incremented"
+            } else {
+                "The hue value will be decremented."
+            }
+
+            Text(text = text)
+        },
+        trailingContent = {
+            Switch(
+                checked = isIncrement,
+                onCheckedChange = onChange
+            )
+        },
+    )
 }
 
 @Composable

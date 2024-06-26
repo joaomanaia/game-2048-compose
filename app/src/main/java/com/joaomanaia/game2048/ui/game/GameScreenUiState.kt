@@ -1,6 +1,7 @@
 package com.joaomanaia.game2048.ui.game
 
 import androidx.annotation.Keep
+import com.joaomanaia.game2048.core.ui.TileColorsGenerator
 import com.joaomanaia.game2048.core.util.emptyGrid
 import com.joaomanaia.game2048.model.Grid
 import com.joaomanaia.game2048.model.GridTileMovement
@@ -14,4 +15,5 @@ data class GameScreenUiState(
     val bestScore: Int = 0,
     val moveCount: Int = 0,
     val isGameOver: Boolean = false,
+    val hueParams: TileColorsGenerator.HueParams = TileColorsGenerator.HueParams()
 )

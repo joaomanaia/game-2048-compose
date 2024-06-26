@@ -13,16 +13,27 @@ import com.joaomanaia.game2048.core.util.hasGridChanged
 import com.joaomanaia.game2048.core.util.makeMove
 import com.joaomanaia.game2048.core.util.map
 import com.joaomanaia.game2048.domain.repository.SaveGameRepository
+import com.joaomanaia.game2048.domain.usecase.GetHueParamsUseCase
 import com.joaomanaia.game2048.model.Direction
 import kotlinx.coroutines.flow.*
 import kotlin.math.max
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    private val saveGameRepository: SaveGameRepository
+    private val saveGameRepository: SaveGameRepository,
+    getHueParamsUseCase: GetHueParamsUseCase
 ) : ViewModel() {
     private val _homeScreenUiState = MutableStateFlow(GameScreenUiState())
-    val homeScreenUiState = _homeScreenUiState.asStateFlow()
+    val homeScreenUiState = combine(
+        _homeScreenUiState,
+        getHueParamsUseCase()
+    ) { uiState, hueParams ->
+        uiState.copy(hueParams = hueParams)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = GameScreenUiState()
+    )
 
     fun onEvent(event: GameScreenUiEvent) {
         viewModelScope.launch {

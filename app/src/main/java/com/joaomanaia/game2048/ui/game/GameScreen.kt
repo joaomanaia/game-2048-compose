@@ -36,7 +36,6 @@ import com.joaomanaia.game2048.core.util.createRandomAddedTile
 import com.joaomanaia.game2048.core.util.emptyGrid
 import com.joaomanaia.game2048.ui.game.components.GameGrid
 import com.joaomanaia.game2048.model.Direction
-import com.joaomanaia.game2048.model.GridTileMovement
 import kotlin.math.sqrt
 import com.joaomanaia.game2048.R
 import com.joaomanaia.game2048.core.navigation.Screen
@@ -58,23 +57,18 @@ internal fun GameScreen(
 ) {
     val homeScreenUiState by gameViewModel.homeScreenUiState.collectAsState()
 
-    HomeScreenContent(
+    GameScreenContent(
         navController = navController,
-        gridTileMovements = homeScreenUiState.gridTileMovements,
+        uiState = homeScreenUiState,
         onSwipeListener = { direction ->
             gameViewModel.onEvent(GameScreenUiEvent.OnMoveGrid(direction))
         },
-        currentScore = homeScreenUiState.currentScore,
-        bestScore = homeScreenUiState.bestScore,
-        moveCount = homeScreenUiState.moveCount,
-        isGameOver = homeScreenUiState.isGameOver,
         onNewGameRequested = {
             gameViewModel.onEvent(GameScreenUiEvent.OnStartNewGameRequest)
         },
         onGridSizeChange = { newSize ->
             gameViewModel.onEvent(GameScreenUiEvent.OnGridSizeChange(newSize))
         },
-        gridSize = homeScreenUiState.gridSize
     )
 }
 
@@ -83,14 +77,9 @@ internal fun GameScreen(
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun HomeScreenContent(
+private fun GameScreenContent(
     navController: NavController,
-    gridTileMovements: List<GridTileMovement>,
-    currentScore: Int,
-    bestScore: Int,
-    moveCount: Int,
-    isGameOver: Boolean,
-    gridSize: Int,
+    uiState: GameScreenUiState,
     onNewGameRequested: () -> Unit,
     onSwipeListener: (direction: Direction) -> Unit,
     onGridSizeChange: (newSize: Int) -> Unit,
@@ -106,11 +95,11 @@ private fun HomeScreenContent(
     }
 
     val currentScoreAnimated by animateIntAsState(
-        targetValue = currentScore,
+        targetValue = uiState.currentScore,
         label = "Current Score"
     )
     val bestScoreAnimated by animateIntAsState(
-        targetValue = bestScore,
+        targetValue = uiState.bestScore,
         label = "Best Score"
     )
 
@@ -235,23 +224,25 @@ private fun HomeScreenContent(
                 style = MaterialTheme.typography.titleMedium
             )
             GameGrid(
-                gridTileMovements = gridTileMovements,
-                moveCount = moveCount,
+                gridTileMovements = uiState.gridTileMovements,
+                moveCount = uiState.moveCount,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(MaterialTheme.spacing.medium)
                     .layoutId(LayoutRef.GAME_GRID),
-                gridSize = gridSize,
+                gridSize = uiState.gridSize,
+                hueParams = uiState.hueParams
             )
         }
 
         when {
-            isGameOver -> GameDialog(
+            uiState.isGameOver -> GameDialog(
                 title = stringResource(id = R.string.game_over),
                 message = stringResource(id = R.string.start_new_game_q),
                 onConfirmListener = onNewGameRequested,
                 onDismissListener = { setResetDialogVisible(false) }
             )
+
             resetDialogVisible -> GameDialog(
                 title = stringResource(id = R.string.start_new_game_q),
                 message = stringResource(id = R.string.start_new_game_warning),
@@ -261,8 +252,9 @@ private fun HomeScreenContent(
                 },
                 onDismissListener = { setResetDialogVisible(false) }
             )
+
             changeGridDialogVisible -> ChangeGameGridDialog(
-                currentSize = gridSize,
+                currentSize = uiState.gridSize,
                 onDismissRequest = { setChangeGridDialogVisible(false) },
                 onGridSizeChange = { newSize ->
                     setChangeGridDialogVisible(false)
@@ -372,17 +364,17 @@ private fun HomeScreenContentPrev() {
     }
 
     Game2048Theme {
-        HomeScreenContent(
+        GameScreenContent(
             navController = rememberNavController(),
-            gridTileMovements = newGridTileMovements,
-            currentScore = 0,
-            bestScore = 0,
-            moveCount = 0,
-            isGameOver = false,
+            uiState = GameScreenUiState(
+                gridSize = 4,
+                grid = emptyGrid(4),
+                gridTileMovements = newGridTileMovements,
+                currentScore = 0,
+            ),
             onNewGameRequested = {},
             onSwipeListener = {},
             onGridSizeChange = {},
-            gridSize = 4
         )
     }
 }

@@ -7,6 +7,7 @@ import com.joaomanaia.game2048.core.manager.DataStoreManager
 import com.joaomanaia.game2048.core.ui.DarkThemeConfig
 import com.joaomanaia.game2048.core.ui.TileColorsGenerator
 import com.joaomanaia.game2048.di.GameDataPreferences
+import com.joaomanaia.game2048.domain.usecase.GetHueParamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -17,25 +18,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ColorSettingsScreenViewModel @Inject constructor(
-    @GameDataPreferences private val gameDataStoreManager: DataStoreManager
+    @GameDataPreferences private val gameDataStoreManager: DataStoreManager,
+    getHueParamsUseCase: GetHueParamsUseCase
 ) : ViewModel() {
-    private val hueParamsFlow = combine(
-        gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.IncrementHue),
-        gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.HueIncrementValue),
-        gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.HueSaturation),
-        gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.HueLightness)
-    ) { incrementHue, hueIncrement, hueSaturation, hueLightness ->
-        TileColorsGenerator.HueParams(
-            isIncrement = incrementHue,
-            hueIncrement = hueIncrement,
-            saturation = hueSaturation,
-            lightness = hueLightness
-        )
-    }
-
     val uiState = combine(
         getDarkThemeConfig(),
-        hueParamsFlow
+        getHueParamsUseCase()
     ) { darkThemeConfig, hueParams ->
         ColorSettingsUiState(
             darkThemeConfig = darkThemeConfig,

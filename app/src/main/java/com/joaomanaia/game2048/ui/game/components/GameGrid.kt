@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.TextStyle
+import com.joaomanaia.game2048.core.ui.TileColorsGenerator
 import com.joaomanaia.game2048.core.ui.spacing
 import com.joaomanaia.game2048.model.GridTileMovement
 import com.joaomanaia.game2048.ui.game.components.grid.GridContainer
@@ -22,6 +23,7 @@ internal fun GameGrid(
     gridTileMovements: List<GridTileMovement>,
     moveCount: Int,
     gridSize: Int,
+    hueParams: TileColorsGenerator.HueParams
 ) {
     GridContainer(
         modifier = modifier
@@ -61,7 +63,8 @@ internal fun GameGrid(
                     fromOffset = fromOffset,
                     toOffset = toOffset,
                     moveCount = moveCount,
-                    textStyle = TextStyle(fontSize = textFontSize)
+                    textStyle = TextStyle(fontSize = textFontSize),
+                    hueParams = hueParams
                 )
             }
         }
