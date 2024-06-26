@@ -3,12 +3,13 @@ package com.joaomanaia.game2048.ui.color_settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
@@ -56,7 +58,7 @@ import com.joaomanaia.game2048.core.ui.spacing
 import com.joaomanaia.game2048.ui.color_settings.components.BaseColorChooser
 import com.joaomanaia.game2048.ui.color_settings.components.DarkThemeDialogPicker
 import com.joaomanaia.game2048.ui.components.BackIconButton
-import com.joaomanaia.game2048.ui.game.components.GRID_ITEM_GAP
+import com.joaomanaia.game2048.ui.game.components.grid.GridContainer
 import com.joaomanaia.game2048.ui.game.components.grid.GridTileText
 import kotlinx.serialization.Serializable
 import kotlin.math.pow
@@ -207,7 +209,7 @@ private fun SettingsItemSlider(
     value: Float,
     icon: @Composable (() -> Unit)? = null,
     onValueChange: (Float) -> Unit,
-    formatTrailingText: (Float) -> String = { "%.1f".format(it) }
+    formatTrailingText: (Float) -> String = { "%.2f".format(it) }
 ) {
     ListItem(
         modifier = modifier,
@@ -291,56 +293,51 @@ private fun PreviewGrid(
     baseColor: Color,
     hueParams: TileColorsGenerator.HueParams
 ) {
-    BoxWithConstraints(
+    GridContainer(
         modifier = modifier
             .clip(MaterialTheme.shapes.extraLarge)
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .padding(MaterialTheme.spacing.medium)
             .clip(MaterialTheme.shapes.large),
-    ) {
-        val tileWidth = remember(maxWidth) {
-            (maxWidth - GRID_ITEM_GAP * (GRID_SIZE - 1)) / GRID_SIZE
-        }
-
-        val textFontSize = with(LocalDensity.current) {
-            (tileWidth * 0.3f).toSp()
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(GRID_ITEM_GAP)
-        ) {
-            for (row in 0 until GRID_SIZE) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(GRID_ITEM_GAP)
-                ) {
-                    for (col in 0 until GRID_SIZE) {
-                        val logNum = remember(row, col) {
-                            row * GRID_SIZE + col + 1
-                        }
-
-                        val num = remember(logNum) {
-                            2.0.pow(logNum).roundToInt()
-                        }
-
-                        val containerColor = remember(logNum, baseColor, hueParams) {
-                            TileColorsGenerator.getColorForTile(
-                                logNum = logNum,
-                                baseColor = baseColor,
-                                hueParams = hueParams
-                            )
-                        }
-
-                        GridTileText(
-                            modifier = Modifier.size(tileWidth),
-                            num = num,
-                            textStyle = TextStyle(fontSize = textFontSize),
-                            containerColor = containerColor,
-                            contentColor = Color.White
-                        )
-                    }
+        gridSize = GRID_SIZE
+    ) { tileWidth, tileOffsetPx, textFontSize ->
+        for (row in 0 until GRID_SIZE) {
+            for (col in 0 until GRID_SIZE) {
+                val logNum = remember(row, col) {
+                    row * GRID_SIZE + col + 1
                 }
+
+                val num = remember(logNum) {
+                    2.0.pow(logNum).roundToInt()
+                }
+
+                val containerColor = remember(logNum, baseColor, hueParams) {
+                    TileColorsGenerator.getColorForTile(
+                        logNum = logNum,
+                        baseColor = baseColor,
+                        hueParams = hueParams
+                    )
+                }
+
+                val density = LocalDensity.current
+
+                val offsetX = with(density) { (col * tileOffsetPx).toDp() }
+                val offsetY = with(density) { (row * tileOffsetPx).toDp() }
+
+                GridTileText(
+                    modifier = Modifier
+                        .size(tileWidth)
+                        .offset(
+                            x = offsetX,
+                            y = offsetY
+                        ),
+                    num = num,
+                    textStyle = TextStyle(fontSize = textFontSize),
+                    containerColor = containerColor,
+                    contentColor = Color.White
+                )
             }
+
         }
     }
 }
@@ -357,7 +354,7 @@ private const val HUE_INCREMENT_STEP = (MAX_HUE_INCREMENT - MIN_HUE_INCREMENT).t
 private const val MIN_HUE_SAT_LIGHT = 0.2f
 private const val MAX_HUE_SAT_LIGHT = 0.8f
 private val HUE_SAT_LIGHT_RANGE = MIN_HUE_SAT_LIGHT..MAX_HUE_SAT_LIGHT
-private const val HUE_SAT_LIGHT_STEP = ((MAX_HUE_SAT_LIGHT - MIN_HUE_SAT_LIGHT) * 10).toInt() - 1
+private const val HUE_SAT_LIGHT_STEP = 11
 
 @Composable
 @PreviewLightDark

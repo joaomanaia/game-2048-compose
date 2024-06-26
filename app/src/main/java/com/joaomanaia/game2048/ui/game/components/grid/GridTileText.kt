@@ -3,30 +3,31 @@ package com.joaomanaia.game2048.ui.game.components.grid
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.joaomanaia.game2048.core.ui.Game2048Theme
 import com.joaomanaia.game2048.core.ui.TileColorsGenerator
 import com.joaomanaia.game2048.model.Tile
@@ -37,29 +38,26 @@ internal fun GridTileText(
     modifier: Modifier = Modifier,
     tile: Tile,
     tileBaseColor: Color = MaterialTheme.colorScheme.primary,
-    size: Dp,
     fromScale: Float,
     fromOffset: Offset,
     toOffset: Offset,
     moveCount: Int,
-    gridSize: Int,
-    isPortrait: Boolean,
+    textStyle: TextStyle
 ) {
     val containerColor = remember(tile, tileBaseColor) {
         TileColorsGenerator.getColorForTile(tile, tileBaseColor)
     }
 
     GridTileText(
-        modifier = modifier.size(size),
+        modifier = modifier,
         num = tile.num,
         fromScale = fromScale,
         fromOffset = fromOffset,
         toOffset = toOffset,
         moveCount = moveCount,
-        gridSize = gridSize,
-        isPortrait = isPortrait,
         containerColor = containerColor,
         contentColor = Color.White,
+        textStyle = textStyle
     )
 }
 
@@ -71,8 +69,7 @@ internal fun GridTileText(
     fromOffset: Offset,
     toOffset: Offset,
     moveCount: Int,
-    gridSize: Int,
-    isPortrait: Boolean,
+    textStyle: TextStyle,
     containerColor: Color,
     contentColor: Color
 ) {
@@ -97,49 +94,9 @@ internal fun GridTileText(
             translationY = animatedOffset.value.y,
         ),
         num = num,
-        gridSize = gridSize,
-        isPortrait = isPortrait,
+        textStyle = textStyle,
         containerColor = containerColor,
         contentColor = contentColor,
-    )
-}
-
-@Composable
-internal fun GridTileText(
-    modifier: Modifier = Modifier,
-    num: Int,
-    gridSize: Int,
-    isPortrait: Boolean,
-    containerColor: Color,
-    contentColor: Color
-) {
-    val textStyle = when {
-        gridSize == 3 -> MaterialTheme.typography.headlineMedium
-        gridSize == 4 && !isPortrait -> MaterialTheme.typography.titleLarge
-        gridSize == 5 && isPortrait -> MaterialTheme.typography.titleLarge
-        gridSize == 5 && !isPortrait -> MaterialTheme.typography.titleMedium
-        gridSize == 6 && isPortrait -> MaterialTheme.typography.titleMedium
-        gridSize == 6 && !isPortrait -> MaterialTheme.typography.titleSmall
-        gridSize == 7 && isPortrait -> MaterialTheme.typography.titleSmall
-        gridSize == 7 && !isPortrait -> MaterialTheme.typography.bodySmall
-        else -> MaterialTheme.typography.headlineSmall
-    }
-
-    Text(
-        text = num.toString(),
-        modifier = modifier
-            .drawBehind {
-                val radius = GRID_TILE_RADIUS.toPx()
-
-                drawRoundRect(
-                    color = containerColor,
-                    cornerRadius = CornerRadius(radius, radius)
-                )
-            }
-            .wrapContentSize(),
-        color = contentColor,
-        style = textStyle,
-        textAlign = TextAlign.Center
     )
 }
 
@@ -151,8 +108,10 @@ internal fun GridTileText(
     containerColor: Color,
     contentColor: Color
 ) {
+    val formattedText = remember(num) { formatNumber(num) }
+
     Text(
-        text = num.toString(),
+        text = formattedText,
         modifier = modifier
             .drawBehind {
                 val radius = GRID_TILE_RADIUS.toPx()
@@ -170,6 +129,14 @@ internal fun GridTileText(
     )
 }
 
+private fun formatNumber(number: Int): String {
+    return when {
+        number >= 1_000_000 -> "${number / 1_000_000}M"
+        number >= 1_000 -> "${number / 1_000}k"
+        else -> number.toString()
+    }
+}
+
 private val GRID_TILE_RADIUS = 4.dp
 
 @Composable
@@ -178,15 +145,17 @@ private fun GridTitleTextPreview() {
     Game2048Theme {
         Surface {
             GridTileText(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(100.dp),
                 tile = Tile(2),
-                size = 100.dp,
                 fromScale = 0f,
                 fromOffset = Offset(0f, 0f),
                 toOffset = Offset(0f, 0f),
                 moveCount = 0,
-                gridSize = 4,
-                isPortrait = true,
+                textStyle = TextStyle(
+                    fontSize = 30.sp
+                )
             )
         }
     }

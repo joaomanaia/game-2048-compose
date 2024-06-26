@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -243,7 +242,6 @@ private fun HomeScreenContent(
                     .padding(MaterialTheme.spacing.medium)
                     .layoutId(LayoutRef.GAME_GRID),
                 gridSize = gridSize,
-                isPortrait = isPortrait
             )
         }
 
