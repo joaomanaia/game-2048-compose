@@ -17,6 +17,7 @@ googleMaterial = "1.12.0"
 hilt = "2.51.1"
 hiltAndroidx = "1.2.0"
 junitJupiter = "5.10.2"
+materialKolor = "1.7.0"
 
 [libraries]
 
@@ -42,6 +43,7 @@ hilt-navigationCompose = { group = "androidx.hilt", name = "hilt-navigation-comp
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
+materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
 [plugins]
 

@@ -107,7 +107,11 @@ private fun ColorSettingsScreen(
         ) {
             item {
                 BaseColorChooser(
-                    onColorSelected = {}
+                    useDarkTheme = uiState.darkThemeConfig.shouldUseDarkTheme(),
+                    currentSeedColor = uiState.seedColor,
+                    onColorSelected = {
+                        onEvent(ColorSettingsUiEvent.OnSeedColorChanged(it))
+                    }
                 )
             }
 

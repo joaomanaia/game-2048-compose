@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import com.google.android.material.color.MaterialColors
+import com.materialkolor.rememberDynamicColorScheme
 
 private val LightThemeColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -72,11 +72,15 @@ private val DarkThemeColors = darkColorScheme(
 
 @Composable
 fun Game2048Theme(
+    seedColor: Color? = null,
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     isDynamic: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
+        seedColor != null -> {
+            rememberDynamicColorScheme(seedColor = seedColor, isDark = useDarkTheme)
+        }
         isDynamic && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

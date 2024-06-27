@@ -29,6 +29,11 @@ object GameDataPreferencesCommon {
         defaultValue = EnumDarkThemeConfig.FOLLOW_SYSTEM.name
     )
 
+    object SeedColor : PreferenceRequest<Int>(
+        key = intPreferencesKey("seed_color"),
+        defaultValue = -1
+    )
+
     object IncrementHue : PreferenceRequest<Boolean>(
         key = booleanPreferencesKey("increment_hue"),
         defaultValue = TileColorsGenerator.DEFAULT_INCREMENT_HUE

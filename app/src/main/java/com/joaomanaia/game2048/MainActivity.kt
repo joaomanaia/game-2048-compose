@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,7 +35,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
             val darkTheme = shouldUseDarkTheme(uiState)
 
             Game2048Theme(
+                seedColor = getSeedColor(uiState),
                 useDarkTheme = darkTheme
             ) {
                 // A surface container using the 'background' color from the theme
@@ -98,5 +100,12 @@ private fun shouldUseDarkTheme(
 ): Boolean = when (uiState) {
     MainUiState.Loading -> isSystemInDarkTheme()
     is MainUiState.Success -> uiState.darkThemeConfig.shouldUseDarkTheme()
+}
+
+private fun getSeedColor(uiState: MainUiState): Color? {
+    return when (uiState) {
+        MainUiState.Loading -> null
+        is MainUiState.Success -> uiState.seedColor
+    }
 }
 

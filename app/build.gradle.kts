@@ -81,6 +81,9 @@ dependencies {
     implementation(libs.hilt.navigationCompose)
     ksp(libs.hilt.android.compiler)
 
+    // Generate dynamic color scheme
+    implementation(libs.materialKolor)
+
     testImplementation(kotlin("test"))
     testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.assertk)

@@ -1,5 +1,7 @@
 package com.joaomanaia.game2048.ui.color_settings
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.joaomanaia.game2048.core.common.preferences.GameDataPreferencesCommon
@@ -9,6 +11,7 @@ import com.joaomanaia.game2048.core.ui.TileColorsGenerator
 import com.joaomanaia.game2048.di.GameDataPreferences
 import com.joaomanaia.game2048.domain.usecase.GetHueParamsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -23,10 +26,12 @@ class ColorSettingsScreenViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = combine(
         getDarkThemeConfig(),
+        getSeedColorFlow(),
         getHueParamsUseCase()
-    ) { darkThemeConfig, hueParams ->
+    ) { darkThemeConfig, seedColor, hueParams ->
         ColorSettingsUiState(
             darkThemeConfig = darkThemeConfig,
+            seedColor = seedColor,
             hueParams = hueParams
         )
     }.stateIn(
@@ -39,9 +44,16 @@ class ColorSettingsScreenViewModel @Inject constructor(
         .getPreferenceFlow(GameDataPreferencesCommon.DarkThemeConfig)
         .map(DarkThemeConfig::valueOf)
 
+    private fun getSeedColorFlow(): Flow<Color?> = gameDataStoreManager
+        .getPreferenceFlow(GameDataPreferencesCommon.SeedColor)
+        .map { colorArgb ->
+            if (colorArgb != -1) Color(colorArgb) else null
+        }
+
     fun onEvent(event: ColorSettingsUiEvent) {
         when (event) {
             is ColorSettingsUiEvent.OnDarkThemeChanged -> updateDarkThemeConfig(event.config)
+            is ColorSettingsUiEvent.OnSeedColorChanged -> updateSeedColor(event.color)
             is ColorSettingsUiEvent.OnIncrementHueChanged -> updateIncrementHue(event.increment)
             is ColorSettingsUiEvent.OnHueIncrementChanged -> updateHueIncrement(event.increment)
             is ColorSettingsUiEvent.OnHueSaturationChanged -> updateHueSaturation(event.saturation)
@@ -54,6 +66,15 @@ class ColorSettingsScreenViewModel @Inject constructor(
             gameDataStoreManager.editPreference(
                 key = GameDataPreferencesCommon.DarkThemeConfig.key,
                 newValue = config.name
+            )
+        }
+    }
+
+    private fun updateSeedColor(color: Color) {
+        viewModelScope.launch {
+            gameDataStoreManager.editPreference(
+                key = GameDataPreferencesCommon.SeedColor.key,
+                newValue = color.toArgb()
             )
         }
     }
