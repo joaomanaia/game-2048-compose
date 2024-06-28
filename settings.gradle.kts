@@ -14,4 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Game2048"
+include(":composeApp")
 include(":app")
