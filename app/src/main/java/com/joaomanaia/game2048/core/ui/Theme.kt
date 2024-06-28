@@ -74,12 +74,17 @@ private val DarkThemeColors = darkColorScheme(
 fun Game2048Theme(
     seedColor: Color? = null,
     useDarkTheme: Boolean = isSystemInDarkTheme(),
+    amoledMode: Boolean = false,
     isDynamic: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         seedColor != null -> {
-            rememberDynamicColorScheme(seedColor = seedColor, isDark = useDarkTheme)
+            rememberDynamicColorScheme(
+                seedColor = seedColor,
+                isDark = useDarkTheme,
+                isAmoled = amoledMode
+            )
         }
         isDynamic && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

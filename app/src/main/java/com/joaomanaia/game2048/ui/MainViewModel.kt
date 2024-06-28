@@ -21,10 +21,12 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = combine(
         getDarkThemeConfigFlow(),
+        gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.AmoledMode),
         getSeedColorFlow()
-    ) { darkThemeConfig, seedColor ->
+    ) { darkThemeConfig, amoledMode, seedColor ->
         MainUiState.Success(
             darkThemeConfig = darkThemeConfig,
+            amoledMode = amoledMode,
             seedColor = seedColor
         )
     }.stateIn(

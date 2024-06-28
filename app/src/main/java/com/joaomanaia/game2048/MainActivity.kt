@@ -63,7 +63,8 @@ class MainActivity : ComponentActivity() {
 
             Game2048Theme(
                 seedColor = getSeedColor(uiState),
-                useDarkTheme = darkTheme
+                useDarkTheme = darkTheme,
+                amoledMode = getAmoledMode(uiState)
             ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -106,6 +107,13 @@ private fun getSeedColor(uiState: MainUiState): Color? {
     return when (uiState) {
         MainUiState.Loading -> null
         is MainUiState.Success -> uiState.seedColor
+    }
+}
+
+private fun getAmoledMode(uiState: MainUiState): Boolean {
+    return when (uiState) {
+        MainUiState.Loading -> false
+        is MainUiState.Success -> uiState.amoledMode
     }
 }
 

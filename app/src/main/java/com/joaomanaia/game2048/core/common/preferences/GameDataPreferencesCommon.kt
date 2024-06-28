@@ -29,6 +29,11 @@ object GameDataPreferencesCommon {
         defaultValue = EnumDarkThemeConfig.FOLLOW_SYSTEM.name
     )
 
+    object AmoledMode : PreferenceRequest<Boolean>(
+        key = booleanPreferencesKey("amoled_mode"),
+        defaultValue = false
+    )
+
     object SeedColor : PreferenceRequest<Int>(
         key = intPreferencesKey("seed_color"),
         defaultValue = -1

@@ -6,6 +6,8 @@ import com.joaomanaia.game2048.core.ui.DarkThemeConfig
 sealed interface ColorSettingsUiEvent {
     data class OnDarkThemeChanged(val config: DarkThemeConfig) : ColorSettingsUiEvent
 
+    data class OnAmoledModeChanged(val amoledMode: Boolean) : ColorSettingsUiEvent
+
     data class OnSeedColorChanged(val color: Color) : ColorSettingsUiEvent
 
     data class OnIncrementHueChanged(val increment: Boolean) : ColorSettingsUiEvent

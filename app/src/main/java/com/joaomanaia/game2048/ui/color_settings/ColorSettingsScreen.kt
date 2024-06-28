@@ -119,7 +119,9 @@ private fun ColorSettingsScreen(
                 NightModeSwitch(
                     modifier = Modifier.padding(vertical = MaterialTheme.spacing.small),
                     darkThemeConfig = uiState.darkThemeConfig,
-                    onEvent = onEvent
+                    amoledMode = uiState.amoledMode,
+                    onDarkThemeChanged = { onEvent(ColorSettingsUiEvent.OnDarkThemeChanged(it)) },
+                    onAmoledModeChanged = { onEvent(ColorSettingsUiEvent.OnAmoledModeChanged(it)) }
                 )
             }
 
@@ -280,7 +282,9 @@ private fun SettingsItemSlider(
 private fun NightModeSwitch(
     modifier: Modifier = Modifier,
     darkThemeConfig: DarkThemeConfig,
-    onEvent: (ColorSettingsUiEvent) -> Unit
+    amoledMode: Boolean,
+    onDarkThemeChanged: (DarkThemeConfig) -> Unit,
+    onAmoledModeChanged: (Boolean) -> Unit,
 ) {
     val isInDarkTheme = darkThemeConfig.shouldUseDarkTheme()
 
@@ -312,7 +316,7 @@ private fun NightModeSwitch(
                     onCheckedChange = {
                         val config = if (it) DarkThemeConfig.DARK else DarkThemeConfig.LIGHT
 
-                        onEvent(ColorSettingsUiEvent.OnDarkThemeChanged(config))
+                        onDarkThemeChanged(config)
                     }
                 )
             }
@@ -321,8 +325,11 @@ private fun NightModeSwitch(
 
     if (darkThemeDialogVisible) {
         DarkThemeDialogPicker(
+            useDarkTheme = isInDarkTheme,
             darkThemeConfig = darkThemeConfig,
-            onDarkThemeChanged = { onEvent(ColorSettingsUiEvent.OnDarkThemeChanged(it)) },
+            amoledMode = amoledMode,
+            onDarkThemeChanged = onDarkThemeChanged,
+            onAmoledModeChanged = onAmoledModeChanged,
             onDismissRequest = { darkThemeDialogVisible = false }
         )
     }

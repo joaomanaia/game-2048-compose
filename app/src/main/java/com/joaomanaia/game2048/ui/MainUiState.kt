@@ -8,6 +8,7 @@ sealed interface MainUiState {
 
     data class Success(
         val darkThemeConfig: DarkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
+        val amoledMode: Boolean = false,
         val seedColor: Color? = null
     ) : MainUiState
 }

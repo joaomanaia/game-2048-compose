@@ -6,6 +6,7 @@ import com.joaomanaia.game2048.core.ui.TileColorsGenerator
 
 data class ColorSettingsUiState(
     val darkThemeConfig: DarkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
+    val amoledMode: Boolean = false,
     val seedColor: Color? = null,
     val hueParams: TileColorsGenerator.HueParams = TileColorsGenerator.HueParams()
 )

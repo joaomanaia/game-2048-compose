@@ -26,11 +26,13 @@ class ColorSettingsScreenViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = combine(
         getDarkThemeConfig(),
+        gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.AmoledMode),
         getSeedColorFlow(),
         getHueParamsUseCase()
-    ) { darkThemeConfig, seedColor, hueParams ->
+    ) { darkThemeConfig, amoledMode, seedColor, hueParams ->
         ColorSettingsUiState(
             darkThemeConfig = darkThemeConfig,
+            amoledMode = amoledMode,
             seedColor = seedColor,
             hueParams = hueParams
         )
@@ -53,6 +55,7 @@ class ColorSettingsScreenViewModel @Inject constructor(
     fun onEvent(event: ColorSettingsUiEvent) {
         when (event) {
             is ColorSettingsUiEvent.OnDarkThemeChanged -> updateDarkThemeConfig(event.config)
+            is ColorSettingsUiEvent.OnAmoledModeChanged -> updateAmoledMode(event.amoledMode)
             is ColorSettingsUiEvent.OnSeedColorChanged -> updateSeedColor(event.color)
             is ColorSettingsUiEvent.OnIncrementHueChanged -> updateIncrementHue(event.increment)
             is ColorSettingsUiEvent.OnHueIncrementChanged -> updateHueIncrement(event.increment)
@@ -66,6 +69,15 @@ class ColorSettingsScreenViewModel @Inject constructor(
             gameDataStoreManager.editPreference(
                 key = GameDataPreferencesCommon.DarkThemeConfig.key,
                 newValue = config.name
+            )
+        }
+    }
+
+    private fun updateAmoledMode(amoledMode: Boolean) {
+        viewModelScope.launch {
+            gameDataStoreManager.editPreference(
+                key = GameDataPreferencesCommon.AmoledMode.key,
+                newValue = amoledMode
             )
         }
     }
