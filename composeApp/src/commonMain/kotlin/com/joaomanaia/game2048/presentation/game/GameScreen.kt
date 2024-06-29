@@ -28,6 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalViewConfiguration
@@ -37,6 +41,7 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
+import com.joaomanaia.game2048.core.compose.ListenKeyEvents
 import com.joaomanaia.game2048.core.navigation.Screen
 import com.joaomanaia.game2048.core.presentation.theme.spacing
 import com.joaomanaia.game2048.model.Direction
@@ -53,10 +58,13 @@ import game2048.composeapp.generated.resources.score
 import game2048.composeapp.generated.resources.settings
 import game2048.composeapp.generated.resources.start_new_game_q
 import game2048.composeapp.generated.resources.start_new_game_warning
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import kotlin.math.sqrt
+
+private val logger = KotlinLogging.logger {}
 
 @Composable
 @OptIn(KoinExperimentalAPI::class)
@@ -114,6 +122,20 @@ private fun GameScreenContent(
         targetValue = uiState.bestScore,
         label = "Best Score"
     )
+
+    ListenKeyEvents { _, event ->
+        // Use key up to avoid multiple spam of key down events
+        if (event.type == KeyEventType.KeyUp) {
+            when (event.key) {
+                Key.DirectionLeft, Key.A -> onSwipeListener(Direction.LEFT)
+                Key.DirectionRight, Key.D -> onSwipeListener(Direction.RIGHT)
+                Key.DirectionUp, Key.W -> onSwipeListener(Direction.UP)
+                Key.DirectionDown, Key.S -> onSwipeListener(Direction.DOWN)
+            }
+        }
+
+        true
+    }
 
     Scaffold(
         topBar = {
@@ -196,6 +218,7 @@ private fun GameScreenContent(
                                 return@detectDragGestures
 
                             val swipeAngle = atan2(dx, -dy)
+                            logger.debug { "swipeAngle: $swipeAngle" }
                             onSwipeListener(
                                 when {
                                     45 <= swipeAngle && swipeAngle < 135 -> Direction.UP
