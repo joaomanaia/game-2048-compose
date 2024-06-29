@@ -1,3 +1,6 @@
 package com.joaomanaia.game2048.core.navigation
 
-interface Screen
+enum class Screen {
+    GAME,
+    COLOR_SETTINGS
+}
