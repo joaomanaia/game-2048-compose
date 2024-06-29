@@ -1,8 +1,7 @@
-package com.joaomanaia.game2048.ui.color_settings.components
+package com.joaomanaia.game2048.presentation.color_settings.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ListItem
@@ -15,11 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.window.Dialog
-import com.joaomanaia.game2048.core.ui.DarkThemeConfig
-import com.joaomanaia.game2048.core.ui.Game2048Theme
-import com.joaomanaia.game2048.core.ui.spacing
+import com.joaomanaia.game2048.core.presentation.theme.DarkThemeConfig
+import com.joaomanaia.game2048.core.presentation.theme.spacing
 
 @Composable
 internal fun DarkThemeDialogPicker(
@@ -131,20 +128,5 @@ private fun DarkThemeConfig.getRadioButtonTitle(): String {
         DarkThemeConfig.FOLLOW_SYSTEM -> "Follow System"
         DarkThemeConfig.LIGHT -> "Disabled"
         DarkThemeConfig.DARK -> "Enabled"
-    }
-}
-
-@Composable
-@PreviewLightDark
-private fun DarkThemeDialogPickerPreview() {
-    Game2048Theme {
-        DarkThemeDialogPicker(
-            useDarkTheme = isSystemInDarkTheme(),
-            amoledMode = false,
-            darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
-            onDarkThemeChanged = {},
-            onAmoledModeChanged = {},
-            onDismissRequest = {}
-        )
     }
 }

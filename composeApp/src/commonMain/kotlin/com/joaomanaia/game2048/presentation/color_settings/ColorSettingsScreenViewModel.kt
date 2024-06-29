@@ -1,36 +1,37 @@
-package com.joaomanaia.game2048.ui.color_settings
+package com.joaomanaia.game2048.presentation.color_settings
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.joaomanaia.game2048.core.presentation.theme.WallpaperColors
 import com.joaomanaia.game2048.core.common.preferences.GameDataPreferencesCommon
-import com.joaomanaia.game2048.core.manager.DataStoreManager
-import com.joaomanaia.game2048.core.ui.DarkThemeConfig
-import com.joaomanaia.game2048.core.ui.TileColorsGenerator
-import com.joaomanaia.game2048.di.GameDataPreferences
+import com.joaomanaia.game2048.core.datastore.manager.DataStoreManager
+import com.joaomanaia.game2048.core.presentation.theme.DarkThemeConfig
 import com.joaomanaia.game2048.domain.usecase.GetHueParamsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ColorSettingsScreenViewModel @Inject constructor(
-    @GameDataPreferences private val gameDataStoreManager: DataStoreManager,
+class ColorSettingsScreenViewModel(
+    private val gameDataStoreManager: DataStoreManager,
+    wallpaperColors: WallpaperColors,
     getHueParamsUseCase: GetHueParamsUseCase
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow(ColorSettingsUiState())
     val uiState = combine(
+        _uiState,
         getDarkThemeConfig(),
         gameDataStoreManager.getPreferenceFlow(GameDataPreferencesCommon.AmoledMode),
         getSeedColorFlow(),
         getHueParamsUseCase()
-    ) { darkThemeConfig, amoledMode, seedColor, hueParams ->
-        ColorSettingsUiState(
+    ) { state, darkThemeConfig, amoledMode, seedColor, hueParams ->
+        state.copy(
             darkThemeConfig = darkThemeConfig,
             amoledMode = amoledMode,
             seedColor = seedColor,
@@ -41,6 +42,16 @@ class ColorSettingsScreenViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ColorSettingsUiState()
     )
+
+    init {
+        wallpaperColors
+            .generateWallpaperColors()
+            .also { colors ->
+                _uiState.update { currentState ->
+                    currentState.copy(wallpaperColors = colors)
+                }
+            }
+    }
 
     private fun getDarkThemeConfig() = gameDataStoreManager
         .getPreferenceFlow(GameDataPreferencesCommon.DarkThemeConfig)

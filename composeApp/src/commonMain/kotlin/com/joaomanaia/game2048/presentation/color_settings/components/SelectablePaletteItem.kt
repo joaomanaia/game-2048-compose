@@ -1,4 +1,4 @@
-package com.joaomanaia.game2048.ui.color_settings.components
+package com.joaomanaia.game2048.presentation.color_settings.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -22,12 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.joaomanaia.game2048.core.compose.preview.BooleanPreviewProvider
-import com.joaomanaia.game2048.core.ui.Game2048Theme
-import com.joaomanaia.game2048.core.ui.spacing
+import com.joaomanaia.game2048.core.presentation.theme.spacing
 import com.materialkolor.rememberDynamicColorScheme
 
 @Composable
@@ -141,22 +137,3 @@ private fun Modifier.drawPalette(
 }
 
 private val SELECTED_CIRCLE_ICON_PADDING = 6.dp
-
-@Composable
-@PreviewLightDark
-private fun PaletteItemPreview(
-    @PreviewParameter(BooleanPreviewProvider::class) selected: Boolean
-) {
-    Game2048Theme {
-        Surface {
-            SelectablePaletteItem(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(75.dp),
-                selected = selected,
-                baseColor = Color.Blue,
-                onClick = {}
-            )
-        }
-    }
-}

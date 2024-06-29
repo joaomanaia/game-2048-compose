@@ -7,7 +7,7 @@ import com.joaomanaia.game2048.model.toHsl
 
 object TileColorsGenerator {
     const val DEFAULT_INCREMENT_HUE = false
-    const val DEFAULT_HUE_INCREMENT = 15f
+    const val DEFAULT_HUE_INCREMENT = 12f
     const val DEFAULT_SATURATION = 0.5f
     const val DEFAULT_LIGHTNESS = 0.5f
 

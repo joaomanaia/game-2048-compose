@@ -1,8 +1,6 @@
-package com.joaomanaia.game2048.ui.color_settings.components
+package com.joaomanaia.game2048.presentation.color_settings.components
 
-import android.os.Build
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,14 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.joaomanaia.game2048.core.ui.Game2048Theme
-import com.joaomanaia.game2048.core.ui.WallpaperColors
-import com.joaomanaia.game2048.core.ui.spacing
+import com.joaomanaia.game2048.core.presentation.theme.spacing
 
 private val defaultBasicColors = setOf(Color.Blue, Color.Red, Color.Green, Color.Yellow)
 
@@ -38,21 +31,15 @@ internal fun BaseColorChooser(
     modifier: Modifier = Modifier,
     currentSeedColor: Color?,
     useDarkTheme: Boolean,
+    wallpaperColors: Set<Color>,
+    defaultSelectedTab: PreviewTabButtonType = PreviewTabButtonType.BACKGROUND_COLOR,
     onColorSelected: (Color) -> Unit
 ) {
-    var selectedTab by remember {
-        mutableStateOf(PreviewTabButtonType.BACKGROUND_COLOR)
-    }
+    var selectedTab by remember { mutableStateOf(defaultSelectedTab) }
 
-    // Is in compose preview mode
-    val isInEditMode = LocalView.current.isInEditMode
-
-    val context = LocalContext.current
-    val wallpaperColors = remember(context) { WallpaperColors(context) }
-
-    val colorsToSelect: Set<Color> = remember(selectedTab) {
-        if (selectedTab == PreviewTabButtonType.BACKGROUND_COLOR && !isInEditMode) {
-            wallpaperColors.generateWallpaperColors()
+    val colorsToSelect: Set<Color> = remember(selectedTab, wallpaperColors) {
+        if (selectedTab == PreviewTabButtonType.BACKGROUND_COLOR && wallpaperColors.isNotEmpty()) {
+           wallpaperColors
         } else {
             defaultBasicColors
         }
@@ -62,20 +49,22 @@ internal fun BaseColorChooser(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
-        ) {
-            PreviewTabButton(
-                title = "Background color",
-                selected = selectedTab == PreviewTabButtonType.BACKGROUND_COLOR,
-                onClick = { selectedTab = PreviewTabButtonType.BACKGROUND_COLOR }
-            )
-            PreviewTabButton(
-                title = "Basic color",
-                selected = selectedTab == PreviewTabButtonType.BASIC_COLOR,
-                onClick = { selectedTab = PreviewTabButtonType.BASIC_COLOR }
-            )
+        if (wallpaperColors.isNotEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small)
+            ) {
+                PreviewTabButton(
+                    title = "Background color",
+                    selected = selectedTab == PreviewTabButtonType.BACKGROUND_COLOR,
+                    onClick = { selectedTab = PreviewTabButtonType.BACKGROUND_COLOR }
+                )
+                PreviewTabButton(
+                    title = "Basic color",
+                    selected = selectedTab == PreviewTabButtonType.BASIC_COLOR,
+                    onClick = { selectedTab = PreviewTabButtonType.BASIC_COLOR }
+                )
+            }
         }
 
         LazyRow(
@@ -95,7 +84,7 @@ internal fun BaseColorChooser(
     }
 }
 
-private enum class PreviewTabButtonType {
+internal enum class PreviewTabButtonType {
     BACKGROUND_COLOR,
     BASIC_COLOR
 }
@@ -132,27 +121,5 @@ private fun RowScope.PreviewTabButton(
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@Composable
-@PreviewLightDark
-private fun BaseColorChooserPreview() {
-    Game2048Theme {
-        Surface {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                var color by remember {
-                    mutableStateOf(Color.Yellow)
-                }
-
-                BaseColorChooser(
-                    useDarkTheme = isSystemInDarkTheme(),
-                    currentSeedColor = color,
-                    onColorSelected = { color = it }
-                )
-            }
-        }
     }
 }

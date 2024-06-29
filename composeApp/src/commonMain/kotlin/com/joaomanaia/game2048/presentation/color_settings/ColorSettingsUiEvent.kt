@@ -1,7 +1,7 @@
-package com.joaomanaia.game2048.ui.color_settings
+package com.joaomanaia.game2048.presentation.color_settings
 
 import androidx.compose.ui.graphics.Color
-import com.joaomanaia.game2048.core.ui.DarkThemeConfig
+import com.joaomanaia.game2048.core.presentation.theme.DarkThemeConfig
 
 sealed interface ColorSettingsUiEvent {
     data class OnDarkThemeChanged(val config: DarkThemeConfig) : ColorSettingsUiEvent
