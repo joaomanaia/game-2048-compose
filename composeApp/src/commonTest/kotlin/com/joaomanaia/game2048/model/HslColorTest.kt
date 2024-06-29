@@ -2,14 +2,11 @@ package com.joaomanaia.game2048.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.graphics.ColorUtils
-import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.isCloseTo
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import kotlin.test.assertEquals
 
 internal class HslColorTest {
     companion object {
