@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,12 +61,14 @@ import kotlin.math.sqrt
 @Composable
 @OptIn(KoinExperimentalAPI::class)
 internal fun GameScreen(
+    windowSizeClass: WindowSizeClass,
     navController: NavController,
     gameViewModel: GameViewModel = koinViewModel()
 ) {
     val homeScreenUiState by gameViewModel.homeScreenUiState.collectAsState()
 
     GameScreenContent(
+        windowSizeClass = windowSizeClass,
         navController = navController,
         uiState = homeScreenUiState,
         onSwipeListener = { direction ->
@@ -85,6 +89,7 @@ internal fun GameScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun GameScreenContent(
+    windowSizeClass: WindowSizeClass,
     navController: NavController,
     uiState: GameScreenUiState,
     onNewGameRequested: () -> Unit,
@@ -166,15 +171,15 @@ private fun GameScreenContent(
             )
         }
     ) { innerPadding ->
-        val isPortrait = true // TODO
-
         val localViewConfiguration = LocalViewConfiguration.current
         var totalDragDistance: Offset = Offset.Zero
 
         val spaceMedium = MaterialTheme.spacing.medium
 
-        val constraints = remember(isPortrait) {
-            buildConstraints(isPortrait = isPortrait, spaceMedium = spaceMedium)
+        val isVertical = remember(windowSizeClass) { windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact }
+
+        val constraints = remember(isVertical) {
+            buildConstraints(isVertical = isVertical, spaceMedium = spaceMedium)
         }
 
         ConstraintLayout(
@@ -295,7 +300,7 @@ private fun atan2(x: Float, y: Float): Float {
 }
 
 private fun buildConstraints(
-    isPortrait: Boolean,
+    isVertical: Boolean,
     spaceMedium: Dp
 ): ConstraintSet {
     return ConstraintSet {
@@ -305,7 +310,7 @@ private fun buildConstraints(
         val bestScoreText = createRefFor(LayoutRef.BEST_SCORE_TEXT)
         val bestScoreLabel = createRefFor(LayoutRef.BEST_SCORE_LABEL)
 
-        if (isPortrait) {
+        if (isVertical) {
             constrain(gameGrid) {
                 start.linkTo(parent.start)
                 top.linkTo(currentScoreLabel.bottom, spaceMedium)

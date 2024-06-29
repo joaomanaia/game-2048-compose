@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +19,8 @@ import org.koin.compose.KoinContext
 
 @Composable
 internal fun App(
-    uiState: MainUiState
+    windowSizeClass: WindowSizeClass,
+    uiState: MainUiState,
 ) {
     val darkTheme = shouldUseDarkTheme(uiState)
 
@@ -40,7 +42,10 @@ internal fun App(
                     startDestination = Screen.GAME.name
                 ) {
                     composable(Screen.GAME.name) {
-                        GameScreen(navController = navController)
+                        GameScreen(
+                            windowSizeClass = windowSizeClass,
+                            navController = navController
+                        )
                     }
 
                     composable(Screen.COLOR_SETTINGS.name) {

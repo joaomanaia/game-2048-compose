@@ -3,6 +3,8 @@ package com.joaomanaia.game2048
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModel()
 
@@ -43,7 +46,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            App(uiState = uiState)
+            val windowSizeClass = calculateWindowSizeClass(this)
+
+            App(
+                windowSizeClass = windowSizeClass,
+                uiState = uiState
+            )
         }
     }
 }

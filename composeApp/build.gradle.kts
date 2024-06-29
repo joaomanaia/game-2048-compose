@@ -55,8 +55,15 @@ kotlin {
 
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.core)
+                implementation(libs.koin.logger.slf4j)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
+
+                implementation(libs.androidx.compose.material3.windowSizeClass)
+
+                implementation(libs.slf4j.api)
+                implementation(libs.slf4j.simple)
+                implementation(libs.kotlinLogging)
 
                 // Generate dynamic color scheme
                 implementation(libs.materialKolor)
