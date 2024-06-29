@@ -10,7 +10,7 @@ assertk = "0.28.1"
 compose-plugin = "1.6.11"
 composeBom = "2024.06.00"
 constraintlayoutCompose = "0.4.0"
-lifecycleViewmodelCompose = "2.8.0"
+lifecycleViewmodelCompose = "2.8.0-dev1698"
 kotlin = "2.0.0"
 kotlinxSerializationJson = "1.7.0"
 kotlinxCoroutines = "1.9.0-RC"
@@ -28,6 +28,7 @@ materialKolor = "1.7.0"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCoreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplashscreen" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-lifecycle-viewmodel-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-constraintlayout-compose = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintlayoutCompose" }

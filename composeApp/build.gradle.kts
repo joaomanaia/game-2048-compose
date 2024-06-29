@@ -47,8 +47,11 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
 
                 implementation(libs.androidx.navigation.compose)
-                implementation(libs.androidx.lifecycle.viewmodel.compose)
                 implementation(libs.androidx.datastore.preferences)
+
+                // lifecycle runtime compose causing problems
+//                implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(libs.androidx.lifecycle.viewmodel.compose)
 
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.core)
