@@ -1,0 +1,67 @@
+name: Build CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+
+permissions:
+  contents: read
+  checks: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "build"
+  cancel-in-progress: false
+
+env:
+  JAVA_VERSION: "17"
+  JAVA_DISTR: 'corretto'
+
+jobs:
+  package-web:
+    name: "📦 Build Web"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: ${{ env.JAVA_DISTR }}
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Web
+        run: ./gradlew wasmJsBrowserDistribution --stacktrace
+
+      - name: Upload Web artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./composeApp/build/dist/wasmJs/productionExecutable/
+
+  deploy-web:
+    name: "🚀 Deploy Web"
+    runs-on: ubuntu-latest
+    environment:
+      name: gh-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs:
+      - package-web
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

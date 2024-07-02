@@ -16,3 +16,28 @@ local.properties
 /app/release
 
 .kotlin
+
+**/build/
+xcuserdata
+!src/**/build/
+.idea
+captures
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+.idea/*
+!.idea/copyright
+# Keep the code styles.
+!/.idea/codeStyles
+/.idea/codeStyles/*
+!/.idea/codeStyles/Project.xml
+!/.idea/codeStyles/codeStyleConfig.xml
+!.idea/runConfigurations/
+
+kotlin-js-store
+
+*.preferences_pb
