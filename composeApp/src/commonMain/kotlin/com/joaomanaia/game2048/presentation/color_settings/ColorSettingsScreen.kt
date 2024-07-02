@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.joaomanaia.game2048.core.presentation.theme.DarkThemeConfig
 import com.joaomanaia.game2048.core.presentation.theme.TileColorsGenerator
 import com.joaomanaia.game2048.core.presentation.theme.spacing
+import com.joaomanaia.game2048.core.util.formatSettingTrailingNumber
 import com.joaomanaia.game2048.presentation.color_settings.components.BaseColorChooser
 import com.joaomanaia.game2048.presentation.color_settings.components.DarkThemeDialogPicker
 import com.joaomanaia.game2048.presentation.components.BackIconButton
@@ -247,9 +248,7 @@ private fun SettingsItemSlider(
     value: Float,
     icon: @Composable (() -> Unit)? = null,
     onValueChange: (Float) -> Unit,
-    // TODO: create a format function
-    formatTrailingText: (Float) -> String = { it.toString() }
-//    formatTrailingText: (Float) -> String = { "%.2f".format(it) }
+    formatTrailingText: (Float) -> String = { formatSettingTrailingNumber(it) }
 ) {
     ListItem(
         modifier = modifier,
