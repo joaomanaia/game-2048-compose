@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val windowSizeClass = calculateWindowSizeClass(this)
+            val windowSizeClass = calculateWindowSizeClass()
 
             CompositionLocalProvider(
                 LocalKeyEventHandlers provides keyEventHandlers

@@ -1,11 +1,8 @@
 package com.joaomanaia.game2048.model
 
-import androidx.annotation.Keep
-
 /**
  * Container class describing how a tile has moved within the grid.
  */
-@Keep
 data class GridTileMovement(
     val fromGridTile: GridTile?,
     val toGridTile: GridTile

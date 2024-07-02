@@ -1,8 +1,8 @@
 package com.joaomanaia.game2048.core.datastore.manager
 
-import androidx.datastore.preferences.core.Preferences
+import com.joaomanaia.game2048.core.datastore.PreferencesKey
 
 open class PreferenceRequest<T>(
-    val key: Preferences.Key<T>,
+    val key: PreferencesKey<T>,
     val defaultValue: T
 )

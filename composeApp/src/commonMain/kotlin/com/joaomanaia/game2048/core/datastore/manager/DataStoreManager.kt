@@ -1,6 +1,8 @@
 package com.joaomanaia.game2048.core.datastore.manager
 
-import androidx.datastore.preferences.core.Preferences
+import com.joaomanaia.game2048.core.datastore.Preferences
+import com.joaomanaia.game2048.core.datastore.PreferencesKey
+import com.joaomanaia.game2048.core.datastore.PreferencesPair
 import kotlinx.coroutines.flow.Flow
 
 interface DataStoreManager {
@@ -10,9 +12,9 @@ interface DataStoreManager {
 
     fun <T> getPreferenceFlow(request: PreferenceRequest<T>): Flow<T>
 
-    suspend fun <T> editPreference(key: Preferences.Key<T>, newValue: T)
+    suspend fun <T> editPreference(key: PreferencesKey<T>, newValue: T)
 
-    suspend fun editPreferences(vararg prefs: Preferences.Pair<*>)
+    suspend fun editPreferences(vararg prefs: PreferencesPair<*>)
 
     suspend fun clearPreferences()
 }

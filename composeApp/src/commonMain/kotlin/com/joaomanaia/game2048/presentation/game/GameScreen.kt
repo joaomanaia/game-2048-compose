@@ -62,6 +62,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import kotlin.math.PI
 import kotlin.math.sqrt
 
 private val logger = KotlinLogging.logger {}
@@ -315,11 +316,16 @@ private fun TextLabel(
 private fun dist(x: Float, y: Float): Float = sqrt(x * y + y * y)
 
 private fun atan2(x: Float, y: Float): Float {
-    var degrees = Math.toDegrees(kotlin.math.atan2(y, x).toDouble()).toFloat()
+//    var degrees = Math.toDegrees(kotlin.math.atan2(y, x).toDouble()).toFloat()
+    var degrees = toDegrees(kotlin.math.atan2(y, x).toDouble()).toFloat()
     if (degrees < 0) {
         degrees += 360
     }
     return degrees
+}
+
+private fun toDegrees(radians: Double): Double {
+    return radians * 180 / PI
 }
 
 private fun buildConstraints(

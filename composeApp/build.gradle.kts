@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -22,11 +23,22 @@ kotlin {
 
     jvm("desktop")
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
+        browser {
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+            }
+        }
+        binaries.executable()
+    }
+
+    applyDefaultHierarchyTemplate()
+
     jvmToolchain(17)
 
     sourceSets {
-        val desktopMain by getting
-
         commonMain {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 
@@ -45,15 +57,13 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
 
                 implementation(libs.androidx.navigation.compose)
-                implementation(libs.androidx.datastore.preferences)
 
                 // lifecycle runtime compose causing problems
 //                implementation(libs.androidx.lifecycle.runtime.compose)
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-                implementation(project.dependencies.platform(libs.koin.bom))
-                implementation(libs.koin.core)
-                implementation(libs.koin.logger.slf4j)
+                api(project.dependencies.platform(libs.koin.bom))
+                api(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
 
@@ -70,29 +80,47 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation(kotlin("test-junit5"))
+//            implementation(kotlin("test-junit5"))
             implementation(libs.junit.jupiter.params)
             implementation(libs.assertk)
 
             implementation(libs.kotlinx.coroutines.test)
         }
 
-        androidMain.dependencies {
-            implementation(libs.androidx.compose.ui.tooling.preview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.core.splashscreen)
+        val androidJvmMain by creating {
+            dependsOn(commonMain.get())
 
-            implementation(libs.kotlinx.coroutines.android)
-
-            implementation(libs.google.material)
-
-            implementation(libs.koin.android)
+            dependencies {
+                implementation(libs.androidx.datastore.preferences)
+            }
         }
 
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+        androidMain {
+            dependsOn(androidJvmMain)
 
-            implementation(libs.kotlinx.coroutines.swing)
+            dependencies {
+                implementation(libs.androidx.compose.ui.tooling.preview)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.core.splashscreen)
+
+                implementation(libs.kotlinx.coroutines.android)
+
+                implementation(libs.google.material)
+
+                implementation(libs.koin.android)
+            }
+        }
+
+        val desktopMain by getting {
+            dependsOn(androidJvmMain)
+
+            dependencies {
+                implementation(compose.desktop.currentOs)
+
+                implementation(libs.koin.logger.slf4j)
+
+                implementation(libs.kotlinx.coroutines.swing)
+            }
         }
     }
 }

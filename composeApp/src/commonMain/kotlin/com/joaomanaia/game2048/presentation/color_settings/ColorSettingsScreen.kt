@@ -54,7 +54,6 @@ import com.joaomanaia.game2048.presentation.color_settings.components.DarkThemeD
 import com.joaomanaia.game2048.presentation.components.BackIconButton
 import com.joaomanaia.game2048.presentation.game.components.grid.GridContainer
 import com.joaomanaia.game2048.presentation.game.components.grid.GridTileText
-import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import kotlin.math.pow
@@ -248,7 +247,9 @@ private fun SettingsItemSlider(
     value: Float,
     icon: @Composable (() -> Unit)? = null,
     onValueChange: (Float) -> Unit,
-    formatTrailingText: (Float) -> String = { "%.2f".format(it) }
+    // TODO: create a format function
+    formatTrailingText: (Float) -> String = { it.toString() }
+//    formatTrailingText: (Float) -> String = { "%.2f".format(it) }
 ) {
     ListItem(
         modifier = modifier,

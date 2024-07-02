@@ -1,6 +1,5 @@
 package com.joaomanaia.game2048.model
 
-import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 import kotlin.math.log2
 import kotlin.math.roundToInt
@@ -8,7 +7,6 @@ import kotlin.math.roundToInt
 /**
  * Container class that wraps a number and a unique [id] for use in the grid.
  */
-@Keep
 @Serializable
 data class Tile(
     val num: Int,

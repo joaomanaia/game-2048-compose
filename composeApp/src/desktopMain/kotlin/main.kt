@@ -1,5 +1,6 @@
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -63,7 +64,8 @@ fun main() = application {
             }
         }
     ) {
-        val windowSizeClass = WindowSizeClass.calculateFromSize(windowState.size)
+//        val windowSizeClass = WindowSizeClass.calculateFromSize(windowState.size)
+        val windowSizeClass = calculateWindowSizeClass()
 
         CompositionLocalProvider(
             LocalKeyEventHandlers provides keyEventHandlers

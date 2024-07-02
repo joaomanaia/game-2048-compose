@@ -1,10 +1,10 @@
 package com.joaomanaia.game2048.core.common.preferences
 
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
+import com.joaomanaia.game2048.core.datastore.booleanPreferencesKey
+import com.joaomanaia.game2048.core.datastore.floatPreferencesKey
+import com.joaomanaia.game2048.core.datastore.intPreferencesKey
 import com.joaomanaia.game2048.core.datastore.manager.PreferenceRequest
+import com.joaomanaia.game2048.core.datastore.stringPreferencesKey
 import com.joaomanaia.game2048.core.presentation.theme.TileColorsGenerator
 import com.joaomanaia.game2048.core.presentation.theme.DarkThemeConfig as EnumDarkThemeConfig
 
