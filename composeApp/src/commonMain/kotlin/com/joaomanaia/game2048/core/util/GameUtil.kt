@@ -8,27 +8,34 @@ import com.joaomanaia.game2048.model.GridTile
 import com.joaomanaia.game2048.model.GridTileMovement
 import com.joaomanaia.game2048.model.Tile
 
-fun emptyGrid(gridSize: Int) = (0 until gridSize).map {
-    arrayOfNulls<Tile?>(gridSize).toList()
+/**
+ * Returns an empty grid of the specified [gridSize].
+ */
+fun emptyGrid(gridSize: Int): Grid = List(gridSize) {
+    List(gridSize) { null }
 }
 
-fun createRandomAddedTile(
-    grid: Grid
-): GridTileMovement? {
-    val emptyCells = grid.flatMapIndexed { row, tiles ->
-        tiles.mapIndexed { col, tile ->
-            if (tile == null) Cell(row, col) else null
+fun createRandomAddedTile(grid: Grid): GridTileMovement? {
+    val emptyCells = grid.flatMapIndexed { rowIndex, row ->
+        row.mapIndexedNotNull { colIndex, tile ->
+            if (tile == null) Cell(rowIndex, colIndex) else null
         }
     }
-    val emptyCell = emptyCells.getOrNull(emptyCells.indices.random()) ?: return null
-    return GridTileMovement.add(
-        GridTile(
-            cell = emptyCell,
-            tile = if ((0..10).random() < 9) Tile(2) else Tile(
-                4
-            )
-        )
-    )
+
+    // If there are no empty cells, return null
+    if (emptyCells.isEmpty()) return null
+
+    val randomEmptyCell = emptyCells.random()
+    val newTileNum = generateRandomTileNum()
+
+    return GridTileMovement.add(GridTile(cell = randomEmptyCell, tile = Tile(newTileNum)))
+}
+
+/**
+ * Generate a random tile num (90% chance of 2, 10% chance of 4)
+ */
+private fun generateRandomTileNum(): Int {
+    return if ((0..9).random() < 9) 2 else 4
 }
 
 fun hasGridChanged(gridTileMovements: List<GridTileMovement>): Boolean {

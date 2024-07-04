@@ -80,8 +80,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-//            implementation(kotlin("test-junit5"))
-            implementation(libs.junit.jupiter.params)
+            implementation(kotlin("test-annotations-common"))
             implementation(libs.assertk)
 
             implementation(libs.kotlinx.coroutines.test)

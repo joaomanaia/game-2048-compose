@@ -4,40 +4,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import assertk.assertThat
 import assertk.assertions.isCloseTo
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
+import kotlin.test.Test
 
 internal class HslColorTest {
     companion object {
         private const val TOLERANCE = 0.01f
 
-        @JvmStatic
-        fun colorToHslProvider() = listOf(
-            Arguments.of(Color.Red.toArgb(), 0f, 1f, 0.5f),
-            Arguments.of(Color.Green.toArgb(), 120f, 1f, 0.5f),
-            Arguments.of(Color.Blue.toArgb(), 240f, 1f, 0.5f),
-            Arguments.of(Color.Black.toArgb(), 0f, 0f, 0f),
-            Arguments.of(Color.White.toArgb(), 0f, 0f, 1f),
-            Arguments.of(Color(0.5f, 0.5f, 0.5f).toArgb(), 0f, 0f, 0.5f),
-            Arguments.of(Color.Yellow.toArgb(), 60f, 1f, 0.5f),
-            Arguments.of(Color.Cyan.toArgb(), 180f, 1f, 0.5f),
-            Arguments.of(Color.Magenta.toArgb(), 300f, 1f, 0.5f)
+        private data class Argument(
+            val colorArgb: Int,
+            val expectedHue: Float,
+            val expectedSaturation: Float,
+            val expectedLightness: Float
+        )
+
+        private fun colorToHslProvider() = listOf(
+            Argument(Color.Red.toArgb(), 0f, 1f, 0.5f),
+            Argument(Color.Green.toArgb(), 120f, 1f, 0.5f),
+            Argument(Color.Blue.toArgb(), 240f, 1f, 0.5f),
+            Argument(Color.Black.toArgb(), 0f, 0f, 0f),
+            Argument(Color.White.toArgb(), 0f, 0f, 1f),
+            Argument(Color(0.5f, 0.5f, 0.5f).toArgb(), 0f, 0f, 0.5f),
+            Argument(Color.Yellow.toArgb(), 60f, 1f, 0.5f),
+            Argument(Color.Cyan.toArgb(), 180f, 1f, 0.5f),
+            Argument(Color.Magenta.toArgb(), 300f, 1f, 0.5f)
         )
     }
 
-    @ParameterizedTest
-    @MethodSource("colorToHslProvider")
-    fun test_toHsl(
-        colorArgb: Int,
-        expectedHue: Float,
-        expectedSaturation: Float,
-        expectedLightness: Float
-    ) {
-        val hsl = Color(colorArgb).toHsl()
+    @Test
+    fun test_toHsl() {
+        colorToHslProvider().forEach { (colorArgb, expectedHue, expectedSaturation, expectedLightness) ->
+            val hsl = Color(colorArgb).toHsl()
 
-        assertThat(expectedHue, "hue").isCloseTo(hsl.hue, TOLERANCE)
-        assertThat(expectedSaturation, "saturation").isCloseTo(hsl.saturation, TOLERANCE)
-        assertThat(expectedLightness, "lightness").isCloseTo(hsl.lightness, TOLERANCE)
+            assertThat(expectedHue, "hue").isCloseTo(hsl.hue, TOLERANCE)
+            assertThat(expectedSaturation, "saturation").isCloseTo(hsl.saturation, TOLERANCE)
+            assertThat(expectedLightness, "lightness").isCloseTo(hsl.lightness, TOLERANCE)
+        }
     }
 }
