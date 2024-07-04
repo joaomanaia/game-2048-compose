@@ -73,5 +73,5 @@ private fun calculateTileSize(maxWidth: Dp, gridSize: Int): Dp {
     return (maxWidth - GRID_ITEM_GAP * (gridSize - 1)) / gridSize
 }
 
-private val GRID_ITEM_GAP = 4.dp
+private val GRID_ITEM_GAP = 6.dp
 private val GRID_TILE_RADIUS = 4.dp

@@ -1,7 +1,9 @@
 package com.joaomanaia.game2048.presentation.game.components.grid
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
@@ -73,7 +75,10 @@ internal fun GridTileText(
     LaunchedEffect(key1 = moveCount) {
         launch {
             animatedScale.snapTo(if (moveCount == 0) 1f else fromScale)
-            animatedScale.animateTo(1f, tween(durationMillis = 200, delayMillis = 50))
+            animatedScale.animateTo(
+                targetValue = 1f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+            )
         }
         launch {
             animatedOffset.animateTo(toOffset, tween(durationMillis = 200))
