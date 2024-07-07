@@ -14,7 +14,6 @@ data class GridTileMovement(
         fun add(gridTile: GridTile): GridTileMovement {
             return GridTileMovement(null, gridTile)
         }
-
         /**
          * Creates a [GridTileMovement] describing a tile that has shifted to a different location in the grid.
          */
@@ -27,6 +26,15 @@ data class GridTileMovement(
          */
         fun noop(gridTile: GridTile): GridTileMovement {
             return GridTileMovement(gridTile, gridTile)
+        }
+
+    }
+
+    override fun toString(): String {
+        return when (fromGridTile) {
+            null -> "add $toGridTile"
+            toGridTile -> "noop $fromGridTile"
+            else -> "shift $fromGridTile -> $toGridTile"
         }
     }
 }

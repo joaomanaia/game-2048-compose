@@ -58,7 +58,7 @@ class GameViewModel(
                             gridTileMovements = saveGameRepository.getSavedGridTileMovements(),
                             currentScore = saveGameRepository.getSavedCurrentScore(),
                             bestScore = saveGameRepository.getSavedBestScore(),
-                            isGameOver = checkIsGameOver(savedGrid, gridSize),
+                            isGameOver = checkIsGameOver(savedGrid),
                             moveCount = 0
                         )
                     }
@@ -116,7 +116,6 @@ class GameViewModel(
             var (updatedGrid, updatedGridTileMovements) = makeMove(
                 grid = state.grid,
                 direction = direction,
-                gridSize = state.gridSize
             )
 
             if (!hasGridChanged(updatedGridTileMovements)) return // No tiles were moved.
@@ -144,7 +143,7 @@ class GameViewModel(
             state.copy(
                 grid = updatedGrid,
                 gridTileMovements = newGridTileMovements,
-                isGameOver = checkIsGameOver(updatedGrid, state.gridSize),
+                isGameOver = checkIsGameOver(updatedGrid),
                 bestScore = newBestScore,
                 currentScore = currentNewScore,
                 moveCount = state.moveCount + 1

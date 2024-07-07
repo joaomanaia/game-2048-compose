@@ -1,18 +1,22 @@
 package com.joaomanaia.game2048.core.util
 
-import androidx.annotation.IntRange
 import com.joaomanaia.game2048.model.Cell
 import com.joaomanaia.game2048.model.Direction
 import com.joaomanaia.game2048.model.Grid
 import com.joaomanaia.game2048.model.GridTile
 import com.joaomanaia.game2048.model.GridTileMovement
 import com.joaomanaia.game2048.model.Tile
+import kotlin.random.Random
 
 /**
  * Returns an empty grid of the specified [gridSize].
  */
 fun emptyGrid(gridSize: Int): Grid = List(gridSize) {
     List(gridSize) { null }
+}
+
+fun Grid.isGridEmpty(): Boolean {
+    return all { row -> row.all { it == null } }
 }
 
 fun createRandomAddedTile(grid: Grid): GridTileMovement? {
@@ -31,61 +35,30 @@ fun createRandomAddedTile(grid: Grid): GridTileMovement? {
     return GridTileMovement.add(GridTile(cell = randomEmptyCell, tile = Tile(newTileNum)))
 }
 
+private fun generateRandomTileNum(): Int {
+    return if (Random.nextFloat() < PROBABILITY_OF_TWO) 2 else 4
+}
+
 /**
  * Generate a random tile num (90% chance of 2, 10% chance of 4)
  */
-private fun generateRandomTileNum(): Int {
-    return if ((0..9).random() < 9) 2 else 4
-}
+private const val PROBABILITY_OF_TWO = 0.9f
 
 fun hasGridChanged(gridTileMovements: List<GridTileMovement>): Boolean {
     // The grid has changed if any of the tiles have moved to a different location.
-    return gridTileMovements.any {
-        val (fromTile, toTile) = it
+    return gridTileMovements.any { (fromTile, toTile) ->
         fromTile == null || fromTile.cell != toTile.cell
     }
 }
 
-fun checkIsGameOver(grid: Grid, gridSize: Int): Boolean {
+fun checkIsGameOver(grid: Grid): Boolean {
+    if (grid.isGridEmpty()) return false
+
     // The game is over if no tiles can be moved in any of the 4 directions.
-    return Direction.entries.none { hasGridChanged(makeMove(grid, it, gridSize).second) }
+    return Direction.entries.none { hasGridChanged(makeMove(grid, it).second) }
 }
 
-private fun <T> List<List<T>>.rotate(
-    @IntRange(from = 0, to = 3) numRotations: Int,
-    gridSize: Int
-): List<List<T>> {
-    return map { row, col, _ ->
-        val (rotatedRow, rotatedCol) = getRotatedCellAt(
-            row = row,
-            col = col,
-            numRotations = numRotations,
-            gridSize = gridSize
-        )
-        this[rotatedRow][rotatedCol]
-    }
-}
-
-private fun getRotatedCellAt(
-    row: Int,
-    col: Int,
-    @IntRange(from = 0, to = 3) numRotations: Int,
-    gridSize: Int
-): Cell {
-    return when (numRotations) {
-        0 -> Cell(row, col)
-        1 -> Cell(gridSize - 1 - col, row)
-        2 -> Cell(gridSize - 1 - row, gridSize - 1 - col)
-        3 -> Cell(col, gridSize - 1 - row)
-        else -> throw IllegalArgumentException("numRotations must be an integer in [0,3]")
-    }
-}
-
-fun makeMove(
-    grid: List<List<Tile?>>,
-    direction: Direction,
-    gridSize: Int
-): Pair<List<List<Tile?>>, List<GridTileMovement>> {
+fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement>> {
     val numRotations = when (direction) {
         Direction.LEFT -> 0
         Direction.DOWN -> 1
@@ -93,13 +66,15 @@ fun makeMove(
         Direction.UP -> 3
     }
 
+    val gridSize = grid.size
+
     // Rotate the grid so that we can process it as if the user has swiped their
     // finger from right to left.
-    var updatedGrid = grid.rotate(numRotations = numRotations, gridSize = gridSize)
+    var updatedGrid = grid.rotate(numRotations = numRotations)
 
     val gridTileMovements = mutableListOf<GridTileMovement>()
 
-    updatedGrid = List(updatedGrid.size) { currentRowIndex ->
+    updatedGrid = List(gridSize) { currentRowIndex ->
         val tiles = updatedGrid[currentRowIndex].toMutableList()
         var lastSeenTileIndex: Int? = null
         var lastSeenEmptyIndex: Int? = null
@@ -216,10 +191,7 @@ fun makeMove(
     }
 
     // Rotate the grid back to its original state.
-    updatedGrid = updatedGrid.rotate(
-        numRotations = floorMod(-numRotations, 4),
-        gridSize = gridSize
-    )
+    updatedGrid = updatedGrid.rotate(numRotations = floorMod(-numRotations, 4))
 
     return Pair(updatedGrid, gridTileMovements)
 }
