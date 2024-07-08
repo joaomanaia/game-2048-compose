@@ -113,10 +113,7 @@ class GameViewModel(
 
     private fun move(direction: Direction) {
         _homeScreenUiState.update { state ->
-            var (updatedGrid, updatedGridTileMovements) = makeMove(
-                grid = state.grid,
-                direction = direction,
-            )
+            var (updatedGrid, updatedGridTileMovements) = state.grid.makeMove(direction = direction)
 
             if (!hasGridChanged(updatedGridTileMovements)) return // No tiles were moved.
 

@@ -4,6 +4,7 @@ import com.joaomanaia.game2048.core.common.preferences.GameDataPreferencesCommon
 import com.joaomanaia.game2048.core.datastore.manager.DataStoreManager
 import com.joaomanaia.game2048.domain.repository.SaveGameRepository
 import com.joaomanaia.game2048.model.Cell
+import com.joaomanaia.game2048.model.Grid
 import com.joaomanaia.game2048.model.GridTile
 import com.joaomanaia.game2048.model.GridTileMovement
 import com.joaomanaia.game2048.model.Tile
@@ -16,24 +17,24 @@ class SaveGameRepositoryImpl(
 ) : SaveGameRepository {
     override suspend fun checkSaveGameExists() = getSavedGrid().isNotEmpty()
 
-    override suspend fun getSavedGrid(): List<List<Tile?>> {
+    override suspend fun getSavedGrid(): Grid {
         val savedGridStr = gameDataStoreManager.getPreference(GameDataPreferencesCommon.Grid)
         return Json.decodeFromString(savedGridStr)
     }
 
     override suspend fun getSavedGridTileMovements(): List<GridTileMovement> {
-        return getSavedGrid().flatMapIndexed { row, tiles ->
-            tiles.mapIndexed { col, tile ->
-                if (tile == null) null else GridTileMovement.noop(
-                    GridTile(
-                        Cell(
-                            row,
-                            col
-                        ), tile
+        return getSavedGrid()
+            .flatMapIndexed { row, tiles ->
+                tiles.mapIndexed { col, tile ->
+                    if (tile == null) null else GridTileMovement.add(
+                        gridTile = GridTile(cell = Cell(row, col), tile = tile)
                     )
-                )
+                }
+            }.filterNotNull()
+            .also { movements ->
+                // Reset the tile id counter
+                Tile.tileIdCounter = movements.maxOf { it.toGridTile.tile.id }
             }
-        }.filterNotNull()
     }
 
     override suspend fun getSavedCurrentScore(): Int =
@@ -55,7 +56,7 @@ class SaveGameRepositoryImpl(
         )
     }
 
-    override suspend fun saveGame(grid: List<List<Tile?>>, currentScore: Int) {
+    override suspend fun saveGame(grid: Grid, currentScore: Int) {
         val gridStr = Json.encodeToString(grid)
 
         gameDataStoreManager.editPreferences(
@@ -65,7 +66,7 @@ class SaveGameRepositoryImpl(
     }
 
     override suspend fun saveGame(
-        grid: List<List<Tile?>>,
+        grid: Grid,
         currentScore: Int,
         bestScore: Int
     ) {

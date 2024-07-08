@@ -37,7 +37,7 @@ internal class GridMovementTest {
         val grid = emptyGrid(3)
 
         for (direction in Direction.entries) {
-            val (newGrid, movements) = makeMove(grid, direction)
+            val (newGrid, movements) = grid.makeMove(direction)
 
             assertThat(newGrid.isGridEmpty()).isTrue()
             assertThat(movements).isEmpty()
@@ -46,7 +46,7 @@ internal class GridMovementTest {
 
     @Test
     fun testDownTileMovement() {
-        makeMove(initialGrid, Direction.DOWN).also { (newGridDown, movementsDown) ->
+        initialGrid.makeMove(Direction.DOWN).also { (newGridDown, movementsDown) ->
             assertThat(newGridDown).isEqualTo(initialGrid)
             with(initialGrid) {
                 assertThat(movementsDown).containsExactlyInAnyOrder(
@@ -62,7 +62,7 @@ internal class GridMovementTest {
 
     @Test
     fun testUpTileMovement() {
-        makeMove(initialGrid, Direction.UP).also { (newGridUp, movementsUp) ->
+        initialGrid.makeMove(Direction.UP).also { (newGridUp, movementsUp) ->
             assertThat(newGridUp).isEqualTo(
                 listOf(
                     listOf(Tile(16, 0), Tile(2, 2), null),
@@ -84,7 +84,7 @@ internal class GridMovementTest {
 
     @Test
     fun testLeftTileMovement() {
-        makeMove(initialGrid, Direction.LEFT).also { (newGridLeft, movementsLeft) ->
+        initialGrid.makeMove(Direction.LEFT).also { (newGridLeft, movementsLeft) ->
             assertThat(newGridLeft).isEqualTo(
                 listOf(
                     listOf(Tile(16, 0), null, null),
@@ -107,7 +107,7 @@ internal class GridMovementTest {
 
     @Test
     fun testRightTileMovement() {
-        makeMove(initialGrid, Direction.RIGHT).also { (newGridRight, movementsRight) ->
+        initialGrid.makeMove(Direction.RIGHT).also { (newGridRight, movementsRight) ->
             assertThat(newGridRight).isEqualTo(
                 listOf(
                     listOf(null, null, Tile(16, 0)),

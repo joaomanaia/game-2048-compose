@@ -55,10 +55,10 @@ fun checkIsGameOver(grid: Grid): Boolean {
     if (grid.isGridEmpty()) return false
 
     // The game is over if no tiles can be moved in any of the 4 directions.
-    return Direction.entries.none { hasGridChanged(makeMove(grid, it).second) }
+    return Direction.entries.none { hasGridChanged(grid.makeMove(it).second) }
 }
 
-fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement>> {
+fun Grid.makeMove(direction: Direction): Pair<Grid, List<GridTileMovement>> {
     val numRotations = when (direction) {
         Direction.LEFT -> 0
         Direction.DOWN -> 1
@@ -66,15 +66,13 @@ fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement
         Direction.UP -> 3
     }
 
-    val gridSize = grid.size
-
     // Rotate the grid so that we can process it as if the user has swiped their
     // finger from right to left.
-    var updatedGrid = grid.rotate(numRotations = numRotations)
+    var updatedGrid = rotate(numRotations = numRotations)
 
     val gridTileMovements = mutableListOf<GridTileMovement>()
 
-    updatedGrid = List(gridSize) { currentRowIndex ->
+    updatedGrid = List(size) { currentRowIndex ->
         val tiles = updatedGrid[currentRowIndex].toMutableList()
         var lastSeenTileIndex: Int? = null
         var lastSeenEmptyIndex: Int? = null
@@ -96,7 +94,7 @@ fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement
                     row = currentRowIndex,
                     col = currentColIndex,
                     numRotations = numRotations,
-                    gridSize = gridSize
+                    gridSize = size
                 ),
                 currentTile
             )
@@ -113,7 +111,7 @@ fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement
                         row = currentRowIndex,
                         col = lastSeenEmptyIndex,
                         numRotations = numRotations,
-                        gridSize = gridSize
+                        gridSize = size
                     )
                     val targetGridTile =
                         GridTile(targetCell, currentTile)
@@ -132,7 +130,7 @@ fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement
                         row = currentRowIndex,
                         col = lastSeenTileIndex,
                         numRotations = numRotations,
-                        gridSize = gridSize
+                        gridSize = size
                     )
                     gridTileMovements.add(
                         GridTileMovement.shift(
@@ -168,7 +166,7 @@ fun makeMove(grid: Grid, direction: Direction): Pair<Grid, List<GridTileMovement
                             row = currentRowIndex,
                             col = lastSeenEmptyIndex,
                             numRotations = numRotations,
-                            gridSize = gridSize
+                            gridSize = size
                         )
                         val targetGridTile =
                             GridTile(targetCell, currentTile)

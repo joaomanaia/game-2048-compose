@@ -1,13 +1,13 @@
 package com.joaomanaia.game2048.domain.repository
 
+import com.joaomanaia.game2048.model.Grid
 import com.joaomanaia.game2048.model.GridTileMovement
-import com.joaomanaia.game2048.model.Tile
 import kotlinx.coroutines.flow.Flow
 
 interface SaveGameRepository {
     suspend fun checkSaveGameExists(): Boolean
 
-    suspend fun getSavedGrid(): List<List<Tile?>>
+    suspend fun getSavedGrid(): Grid
 
     suspend fun getSavedGridTileMovements(): List<GridTileMovement>
 
@@ -22,12 +22,12 @@ interface SaveGameRepository {
     suspend fun updateGridSize(newSize: Int)
 
     suspend fun saveGame(
-        grid: List<List<Tile?>>,
+        grid: Grid,
         currentScore: Int
     )
 
     suspend fun saveGame(
-        grid: List<List<Tile?>>,
+        grid: Grid,
         currentScore: Int,
         bestScore: Int
     )
