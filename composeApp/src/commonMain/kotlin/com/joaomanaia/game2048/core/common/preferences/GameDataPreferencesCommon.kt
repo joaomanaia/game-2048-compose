@@ -52,4 +52,18 @@ object GameDataPreferencesCommon {
         key = floatPreferencesKey("hue_lightness"),
         defaultValue = TileColorsGenerator.DEFAULT_LIGHTNESS
     )
+
+    internal fun allPreferences() = listOf(
+        Grid,
+        CurrentScore,
+        BestScore,
+        GridSize,
+        DarkThemeConfig,
+        AmoledMode,
+        SeedColor,
+        IncrementHue,
+        HueIncrementValue,
+        HueSaturation,
+        HueLightness
+    )
 }
